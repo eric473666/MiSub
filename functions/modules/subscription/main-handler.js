@@ -708,7 +708,8 @@ export async function handleMisubRequest(context) {
                 templateSource,
                 managedConfigUrl,
                 storageAdapter,
-                userInfoHeader
+                userInfoHeader,
+                forceRefresh
             });
 
             // [Subconverter API] 处理 list=true 逻辑：仅输出节点片段

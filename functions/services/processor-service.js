@@ -74,7 +74,8 @@ export class ProcessorService {
             templateSource = { kind: 'none', value: '' },
             managedConfigUrl,
             storageAdapter,
-            userInfoHeader
+            userInfoHeader,
+            forceRefresh = false
         } = options || {};
 
         // Check for Base64 (simplest case)
@@ -109,7 +110,7 @@ export class ProcessorService {
         const remoteTemplateUrl = templateSource.kind === 'remote' ? templateSource.value : '';
 
         if (builtinTemplateEntry || remoteTemplateUrl) {
-            const templateText = builtinTemplateEntry?.content || await fetchTransformTemplate(storageAdapter, remoteTemplateUrl);
+            const templateText = builtinTemplateEntry?.content || await fetchTransformTemplate(storageAdapter, remoteTemplateUrl, forceRefresh);
             const isIniTemplate = isIniTemplateSource(templateSource, builtinTemplateEntry);
 
             if (templateText && isIniTemplate) {
