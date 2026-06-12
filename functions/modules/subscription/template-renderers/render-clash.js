@@ -99,16 +99,12 @@ export function renderClashFromTemplateModel(model) {
         'external-controller': ':9090',
         'proxies': normalizedModel.proxies,
         'proxy-groups': normalizedModel.groups
-            .filter(group =>
-                (Array.isArray(group.members) && group.members.length > 0) ||
-                (Array.isArray(group.filters) && group.filters.length > 0)
-            )
+            .filter(group => Array.isArray(group.members) && group.members.length > 0)
             .map(group => {
                 return {
                     name: group.name,
                     type: mapGroupType(group.type),
                     proxies: filterAutoSelectMembers(group),
-                    filter: Array.isArray(group.filters) && group.filters.length > 0 ? group.filters.join('|') : undefined,
                     ...group.options
                 };
             }),

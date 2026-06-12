@@ -71,6 +71,38 @@ MATCH,节点选择
         expect(autoSelectGroup.proxies).not.toContain('DIRECT');
     });
 
+    it('should expand regex proxy groups for Clash without emitting filter fields', () => {
+        const rendered = renderClashFromIniTemplate(`
+[custom]
+custom_proxy_group=👋 手动切换\`select\`.*
+custom_proxy_group=🇭🇰 香港日常\`url-test\`(HK-VMISS|HK-ZGO)\`http://www.gstatic.com/generate_204\`300,,50
+ruleset=👋 手动切换,[]FINAL
+        `, {
+            proxies: [
+                { name: '🇭🇰 手动节点 - HK-VMISS', type: 'trojan', server: '1.1.1.1', port: 443, password: 'pass' },
+                { name: '🇭🇰 手动节点 - HK-ZGO', type: 'trojan', server: '1.1.1.2', port: 443, password: 'pass' },
+                { name: '🇺🇸 手动节点 - LA-BWD', type: 'trojan', server: '1.1.1.3', port: 443, password: 'pass' }
+            ]
+        });
+
+        const parsed = yaml.load(rendered);
+        const manualGroup = parsed['proxy-groups'].find(group => group.name === '👋 手动切换');
+        const hkGroup = parsed['proxy-groups'].find(group => group.name === '🇭🇰 香港日常');
+
+        expect(manualGroup.proxies).toEqual([
+            '🇭🇰 手动节点 - HK-VMISS',
+            '🇭🇰 手动节点 - HK-ZGO',
+            '🇺🇸 手动节点 - LA-BWD'
+        ]);
+        expect(hkGroup.proxies).toEqual([
+            '🇭🇰 手动节点 - HK-VMISS',
+            '🇭🇰 手动节点 - HK-ZGO'
+        ]);
+        expect(parsed['proxy-groups'].every(group => group.filter === undefined)).toBe(true);
+        expect(rendered).not.toContain('\n    filter:');
+        expect(rendered).not.toContain('\n  filter:');
+    });
+
     it('should keep Clash template relay-like groups as plain select without dialer-proxy', () => {
         const rendered = renderClashFromIniTemplate(`
 [Proxy Group]
