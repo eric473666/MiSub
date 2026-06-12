@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import fs from 'node:fs';
 import yaml from 'js-yaml';
 import { parseIniTemplate } from '../../functions/modules/subscription/template-parsers/ini-template-parser.js';
 import { renderClashFromIniTemplate, renderLoonFromIniTemplate, renderQuanxFromIniTemplate, renderSingboxFromIniTemplate, renderSurgeFromIniTemplate } from '../../functions/modules/subscription/template-pipeline.js';
@@ -101,6 +102,41 @@ ruleset=👋 手动切换,[]FINAL
         expect(parsed['proxy-groups'].every(group => group.filter === undefined)).toBe(true);
         expect(rendered).not.toContain('\n    filter:');
         expect(rendered).not.toContain('\n  filter:');
+    });
+
+    it('should render the active custom Clash template for the current manual nodes', () => {
+        const template = fs.readFileSync(new URL('../../public/misub-custom-clash.ini', import.meta.url), 'utf8');
+        const rendered = renderClashFromIniTemplate(template, {
+            proxies: [
+                { name: '🇱🇦 手动节点 - LA-to-UK-Exit', type: 'trojan', server: '192.0.2.1', port: 443, password: 'pass' },
+                { name: '🇱🇦 手动节点 - LA-Direct-bwh', type: 'trojan', server: '192.0.2.2', port: 443, password: 'pass' },
+                { name: '🇬🇧 手动节点 - UK-Residential-Exit', type: 'trojan', server: '192.0.2.3', port: 443, password: 'pass' },
+                { name: '🇨🇳 手动节点 - tw-Hinet-home-HKRelay', type: 'trojan', server: '192.0.2.4', port: 443, password: 'pass' },
+                { name: '🇯🇵 手动节点 - jp-KDDI-home-HKRelay', type: 'trojan', server: '192.0.2.5', port: 443, password: 'pass' },
+                { name: '🇭🇰 手动节点 - vmiss-HK', type: 'trojan', server: '192.0.2.6', port: 443, password: 'pass' }
+            ]
+        });
+
+        const parsed = yaml.load(rendered);
+        const groups = Object.fromEntries(parsed['proxy-groups'].map(group => [group.name, group]));
+
+        expect(parsed['proxy-groups'].every(group => group.filter === undefined)).toBe(true);
+        expect(rendered).not.toContain('\n    filter:');
+        expect(groups['🇺🇸 BWH-LA 日常'].proxies).toEqual(['🇱🇦 手动节点 - LA-Direct-bwh']);
+        expect(groups['🇭🇰 香港日常'].proxies).toEqual(['🇭🇰 手动节点 - vmiss-HK']);
+        expect(groups['🇬🇧 英国出口'].proxies).toEqual([
+            '🇱🇦 手动节点 - LA-to-UK-Exit',
+            '🇬🇧 手动节点 - UK-Residential-Exit'
+        ]);
+        expect(groups['🇬🇧 英国家宽解锁'].proxies).toEqual(['🇬🇧 手动节点 - UK-Residential-Exit']);
+        expect(groups['🇯🇵 日本家宽解锁'].proxies).toEqual(['🇯🇵 手动节点 - jp-KDDI-home-HKRelay']);
+        expect(groups['🇹🇼 台湾家宽解锁'].proxies).toEqual(['🇨🇳 手动节点 - tw-Hinet-home-HKRelay']);
+        expect(groups['🤖 智能 AI'].proxies).toContain('🇺🇸 BWH-LA 日常');
+        expect(groups['🤖 智能 AI'].proxies).toContain('🏠 家宽解锁池');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,elevenlabs.io,🎙 AI 语音解说');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,sora.com,🎬 AI 视频生成');
+        expect(parsed.rules).toContain('DOMAIN,gemini.google.com,🤖 智能 AI');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,bbc.co.uk,🇬🇧 英国媒体');
     });
 
     it('should keep Clash template relay-like groups as plain select without dialer-proxy', () => {
