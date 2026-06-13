@@ -124,25 +124,24 @@ ruleset=👋 手动切换,[]FINAL
 
         expect(parsed['proxy-groups'].every(group => group.filter === undefined)).toBe(true);
         expect(rendered).not.toContain('\n    filter:');
-        expect(groups['🇺🇸 BWH-LA 日常'].proxies).toEqual(['🇱🇦 手动节点 - LA-Direct-bwh']);
-        expect(groups['🇺🇸 DMIT/LA 日常'].proxies).toEqual([
+        expect(groups['🇺🇸 BWH-LA 日常']).toBeUndefined();
+        expect(groups['🇺🇸 DMIT/LA 日常']).toBeUndefined();
+        expect(groups['🇬🇧 英国出口']).toBeUndefined();
+        expect(groups['🇺🇸 LA 机房线路'].type).toBe('url-test');
+        expect(groups['🇺🇸 LA 机房线路'].proxies).toEqual([
             '🇺🇸 手动节点 - DMIT-US-Landing',
-            '🇱🇦 手动节点 - LA-DMIT'
+            '🇱🇦 手动节点 - LA-DMIT',
+            '🇱🇦 手动节点 - LA-Direct-bwh'
         ]);
         expect(groups['🇭🇰 香港日常'].proxies).toEqual(['🇭🇰 手动节点 - vmiss-HK']);
-        expect(groups['🇬🇧 英国出口'].proxies).toEqual([
+        expect(groups['🇬🇧 英国家宽落地'].proxies).toEqual([
             '🇭🇰 手动节点 - HK-to-UK-Residential',
             '🇬🇧 手动节点 - UK-Residential-Exit'
         ]);
-        expect(groups['🇬🇧 英国家宽解锁'].proxies).toEqual([
-            '🇭🇰 手动节点 - HK-to-UK-Residential',
-            '🇬🇧 手动节点 - UK-Residential-Exit'
-        ]);
-        expect(groups['🇯🇵 日本家宽解锁'].proxies).toEqual(['🇯🇵 手动节点 - jp-KDDI-home-HKRelay']);
-        expect(groups['🇹🇼 台湾家宽解锁'].proxies).toEqual(['🇨🇳 手动节点 - tw-Hinet-home-HKRelay']);
-        expect(groups['🤖 智能 AI'].proxies).toContain('🇺🇸 BWH-LA 日常');
-        expect(groups['🤖 智能 AI'].proxies).toContain('🇺🇸 DMIT/LA 日常');
-        expect(groups['🤖 智能 AI'].proxies).toContain('🏠 家宽解锁池');
+        expect(groups['🏠 其他家宽落地'].proxies).toEqual(['🇯🇵 手动节点 - jp-KDDI-home-HKRelay']);
+        expect(groups['🇹🇼 台湾家宽落地'].proxies).toEqual(['🇨🇳 手动节点 - tw-Hinet-home-HKRelay']);
+        expect(groups['🤖 智能 AI'].proxies).toContain('🇺🇸 LA 机房线路');
+        expect(groups['🤖 智能 AI'].proxies).toContain('🏠 家宽落地池');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,elevenlabs.io,🎙 AI 语音解说');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,cartesia.ai,🎙 AI 语音解说');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,sora.com,🎬 AI 视频生成');
