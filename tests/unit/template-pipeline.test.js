@@ -115,7 +115,8 @@ ruleset=👋 手动切换,[]FINAL
                 { name: '🇱🇦 手动节点 - LA-DMIT', type: 'trojan', server: '192.0.2.5', port: 443, password: 'pass' },
                 { name: '🇱🇦 手动节点 - LA-Direct-bwh', type: 'trojan', server: '192.0.2.6', port: 443, password: 'pass' },
                 { name: '🇬🇧 手动节点 - UK-Residential-Exit', type: 'trojan', server: '192.0.2.7', port: 443, password: 'pass' },
-                { name: '🇭🇰 手动节点 - vmiss-HK', type: 'trojan', server: '192.0.2.8', port: 443, password: 'pass' }
+                { name: '🇭🇰 手动节点 - vmiss-HK', type: 'trojan', server: '192.0.2.8', port: 443, password: 'pass' },
+                { name: '🇺🇸 手动节点 - US-Mini-home', type: 'trojan', server: '192.0.2.9', port: 443, password: 'pass' }
             ]
         });
 
@@ -140,17 +141,21 @@ ruleset=👋 手动切换,[]FINAL
         ]);
         expect(groups['🇯🇵 日本落地'].proxies).toEqual(['🇯🇵 手动节点 - jp-KDDI-home-HKRelay']);
         expect(groups['🇹🇼 台湾落地'].proxies).toEqual(['🇨🇳 手动节点 - tw-Hinet-home-HKRelay']);
+        expect(groups['🇺🇸 美国落地'].proxies).toEqual(['🇺🇸 手动节点 - US-Mini-home']);
         expect(groups['🏠 家宽池'].proxies).toEqual([
             '🇬🇧 英国落地',
             '🇹🇼 台湾落地',
+            '🇺🇸 美国落地',
             '🇯🇵 日本落地',
             '👋 手动切换'
         ]);
-        expect(groups['🤖 智能 AI'].proxies.slice(0, 3)).toEqual([
+        expect(groups['🤖 智能 AI'].proxies.slice(0, 4)).toEqual([
             '🇹🇼 台湾落地',
             '🇬🇧 英国落地',
+            '🇺🇸 美国落地',
             '🏠 家宽池'
         ]);
+        expect(groups['🏰 Disney'].proxies[0]).toBe('🇺🇸 美国落地');
         expect(groups['🤖 智能 AI'].proxies).toContain('🇺🇸 LA 机房线路');
         expect(groups['🤖 智能 AI'].proxies).not.toContain('♻️ 日常自动');
         expect(groups['🎙 AI 语音解说'].proxies).not.toContain('♻️ 日常自动');
