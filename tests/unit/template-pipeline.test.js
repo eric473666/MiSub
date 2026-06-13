@@ -141,7 +141,7 @@ ruleset=👋 手动切换,[]FINAL
         ]);
         expect(groups['🇯🇵 日本落地'].proxies).toEqual(['🇯🇵 手动节点 - jp-KDDI-home-HKRelay']);
         expect(groups['🇹🇼 台湾落地'].proxies).toEqual(['🇨🇳 手动节点 - tw-Hinet-home-HKRelay']);
-        expect(groups['🇺🇸 美国落地'].proxies).toEqual(['🇺🇸 手动节点 - US-Mini-home']);
+        expect(groups['🇺🇸 美国落地'].proxies).toEqual(['🇺🇸 手动节点 - DMIT-US-Landing']);
         expect(groups['🏠 家宽池'].proxies).toEqual([
             '🇬🇧 英国落地',
             '🇹🇼 台湾落地',
