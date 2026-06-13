@@ -134,14 +134,24 @@ ruleset=👋 手动切换,[]FINAL
             '🇱🇦 手动节点 - LA-Direct-bwh'
         ]);
         expect(groups['🇭🇰 香港日常'].proxies).toEqual(['🇭🇰 手动节点 - vmiss-HK']);
-        expect(groups['🇬🇧 英国家宽落地'].proxies).toEqual([
+        expect(groups['🇬🇧 英国落地'].proxies).toEqual([
             '🇭🇰 手动节点 - HK-to-UK-Residential',
             '🇬🇧 手动节点 - UK-Residential-Exit'
         ]);
-        expect(groups['🏠 其他家宽落地'].proxies).toEqual(['🇯🇵 手动节点 - jp-KDDI-home-HKRelay']);
-        expect(groups['🇹🇼 台湾家宽落地'].proxies).toEqual(['🇨🇳 手动节点 - tw-Hinet-home-HKRelay']);
+        expect(groups['🇯🇵 日本落地'].proxies).toEqual(['🇯🇵 手动节点 - jp-KDDI-home-HKRelay']);
+        expect(groups['🇹🇼 台湾落地'].proxies).toEqual(['🇨🇳 手动节点 - tw-Hinet-home-HKRelay']);
+        expect(groups['🏠 家宽池'].proxies).toEqual([
+            '🇬🇧 英国落地',
+            '🇹🇼 台湾落地',
+            '🇯🇵 日本落地',
+            '👋 手动切换'
+        ]);
+        expect(groups['🤖 智能 AI'].proxies.slice(0, 3)).toEqual([
+            '🇹🇼 台湾落地',
+            '🇬🇧 英国落地',
+            '🏠 家宽池'
+        ]);
         expect(groups['🤖 智能 AI'].proxies).toContain('🇺🇸 LA 机房线路');
-        expect(groups['🤖 智能 AI'].proxies).toContain('🏠 家宽落地池');
         expect(groups['🤖 智能 AI'].proxies).not.toContain('♻️ 日常自动');
         expect(groups['🎙 AI 语音解说'].proxies).not.toContain('♻️ 日常自动');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,elevenlabs.io,🎙 AI 语音解说');
