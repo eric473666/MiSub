@@ -142,6 +142,8 @@ ruleset=👋 手动切换,[]FINAL
         expect(groups['🇹🇼 台湾家宽落地'].proxies).toEqual(['🇨🇳 手动节点 - tw-Hinet-home-HKRelay']);
         expect(groups['🤖 智能 AI'].proxies).toContain('🇺🇸 LA 机房线路');
         expect(groups['🤖 智能 AI'].proxies).toContain('🏠 家宽落地池');
+        expect(groups['🤖 智能 AI'].proxies).not.toContain('♻️ 日常自动');
+        expect(groups['🎙 AI 语音解说'].proxies).not.toContain('♻️ 日常自动');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,elevenlabs.io,🎙 AI 语音解说');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,cartesia.ai,🎙 AI 语音解说');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,sora.com,🎬 AI 视频生成');
