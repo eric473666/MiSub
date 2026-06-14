@@ -108,15 +108,28 @@ ruleset=👋 手动切换,[]FINAL
         const template = fs.readFileSync(new URL('../../public/misub-custom-clash.ini', import.meta.url), 'utf8');
         const rendered = renderClashFromIniTemplate(template, {
             proxies: [
-                { name: '🇭🇰 手动节点 - HK-to-UK-Residential', type: 'trojan', server: '192.0.2.1', port: 443, password: 'pass' },
-                { name: '🇺🇸 手动节点 - DMIT-US-Landing', type: 'trojan', server: '192.0.2.2', port: 443, password: 'pass' },
-                { name: '🇨🇳 手动节点 - tw-Hinet-home-HKRelay', type: 'trojan', server: '192.0.2.3', port: 443, password: 'pass' },
-                { name: '🇯🇵 手动节点 - jp-KDDI-home-HKRelay', type: 'trojan', server: '192.0.2.4', port: 443, password: 'pass' },
-                { name: '🇱🇦 手动节点 - LA-DMIT', type: 'trojan', server: '192.0.2.5', port: 443, password: 'pass' },
-                { name: '🇱🇦 手动节点 - LA-Direct-bwh', type: 'trojan', server: '192.0.2.6', port: 443, password: 'pass' },
-                { name: '🇬🇧 手动节点 - UK-Residential-Exit', type: 'trojan', server: '192.0.2.7', port: 443, password: 'pass' },
-                { name: '🇭🇰 手动节点 - vmiss-HK', type: 'trojan', server: '192.0.2.8', port: 443, password: 'pass' },
-                { name: '🇺🇸 手动节点 - US-Mini-home', type: 'trojan', server: '192.0.2.9', port: 443, password: 'pass' }
+                { name: '🇺🇸 手动节点 - US-USAT3-via-BWH', type: 'trojan', server: '192.0.2.1', port: 443, password: 'pass' },
+                { name: '🇺🇸 手动节点 - US-USAT3-via-HK', type: 'trojan', server: '192.0.2.2', port: 443, password: 'pass' },
+                { name: '🇺🇸 手动节点 - US-USAT3-via-DMIT', type: 'trojan', server: '192.0.2.3', port: 443, password: 'pass' },
+                { name: '🇺🇸 手动节点 - US-USAT3', type: 'trojan', server: '192.0.2.4', port: 443, password: 'pass' },
+                { name: '🇭🇰 手动节点 - HK-HKT3', type: 'trojan', server: '192.0.2.5', port: 443, password: 'pass' },
+                { name: '🇬🇧 手动节点 - UK-GUID2', type: 'trojan', server: '192.0.2.6', port: 443, password: 'pass' },
+                { name: '🇭🇰 手动节点 - HK-HKT3-via-HK', type: 'trojan', server: '192.0.2.7', port: 443, password: 'pass' },
+                { name: '🇬🇧 手动节点 - UK-GUID2-via-HK', type: 'trojan', server: '192.0.2.8', port: 443, password: 'pass' },
+                { name: '🇬🇧 手动节点 - UK-LISA-via-HK', type: 'trojan', server: '192.0.2.9', port: 443, password: 'pass' },
+                { name: '🇯🇵 手动节点 - JP-KDDI-via-DMIT', type: 'trojan', server: '192.0.2.10', port: 443, password: 'pass' },
+                { name: '🇹🇼 手动节点 - TW-Hinet-via-DMIT', type: 'trojan', server: '192.0.2.11', port: 443, password: 'pass' },
+                { name: '🇺🇸 手动节点 - US-DMIT', type: 'trojan', server: '192.0.2.12', port: 443, password: 'pass' },
+                { name: '🇬🇧 手动节点 - UK-LISA-via-BWH', type: 'trojan', server: '192.0.2.13', port: 443, password: 'pass' },
+                { name: '🇺🇸 手动节点 - US-BWH', type: 'trojan', server: '192.0.2.14', port: 443, password: 'pass' },
+                { name: '🇬🇧 手动节点 - UK-LISA', type: 'trojan', server: '192.0.2.15', port: 443, password: 'pass' },
+                { name: '🇹🇼 手动节点 - TW-Hinet-via-HK', type: 'trojan', server: '192.0.2.16', port: 443, password: 'pass' },
+                { name: '🇯🇵 手动节点 - JP-KDDI-via-HK', type: 'trojan', server: '192.0.2.17', port: 443, password: 'pass' },
+                { name: '🇭🇰 手动节点 - HK-VMISS', type: 'trojan', server: '192.0.2.18', port: 443, password: 'pass' },
+                { name: '🇯🇵 手动节点 - JP-KDDI', type: 'trojan', server: '192.0.2.19', port: 443, password: 'pass' },
+                { name: '🇹🇼 手动节点 - TW-Hinet', type: 'trojan', server: '192.0.2.20', port: 443, password: 'pass' },
+                { name: '🇺🇸 手动节点 - US-ZG-LA', type: 'trojan', server: '192.0.2.21', port: 443, password: 'pass' },
+                { name: '🇭🇰 手动节点 - HK-ZGO', type: 'trojan', server: '192.0.2.22', port: 443, password: 'pass' }
             ]
         });
 
@@ -128,31 +141,64 @@ ruleset=👋 手动切换,[]FINAL
         expect(groups['🇺🇸 BWH-LA 日常']).toBeUndefined();
         expect(groups['🇺🇸 DMIT/LA 日常']).toBeUndefined();
         expect(groups['🇬🇧 英国出口']).toBeUndefined();
-        expect(groups['🇺🇸 LA 机房线路'].type).toBe('url-test');
+        expect(groups['🇺🇸 LA 机房线路'].type).toBe('select');
         expect(groups['🇺🇸 LA 机房线路'].proxies).toEqual([
-            '🇺🇸 手动节点 - DMIT-US-Landing',
-            '🇱🇦 手动节点 - LA-DMIT',
-            '🇱🇦 手动节点 - LA-Direct-bwh'
+            '🇺🇸 手动节点 - US-BWH',
+            '🇺🇸 手动节点 - US-DMIT',
+            '🇺🇸 手动节点 - US-ZG-LA'
         ]);
-        expect(groups['🇭🇰 香港日常'].proxies).toEqual(['🇭🇰 手动节点 - vmiss-HK']);
+        expect(groups['♻️ 日常自动'].proxies).toEqual(['🇺🇸 LA 机房线路', '🇭🇰 香港日常']);
+        expect(groups['🇭🇰 香港日常'].proxies).toEqual([
+            '🇭🇰 手动节点 - HK-HKT3',
+            '🇭🇰 手动节点 - HK-VMISS',
+            '🇭🇰 手动节点 - HK-ZGO'
+        ]);
+        expect(groups['🇺🇸 美国落地'].proxies).toEqual([
+            '🇺🇸 手动节点 - US-USAT3',
+            '🇺🇸 手动节点 - US-USAT3-via-BWH',
+            '🇺🇸 手动节点 - US-USAT3-via-HK',
+            '🇺🇸 手动节点 - US-USAT3-via-DMIT'
+        ]);
+        expect(groups['🇭🇰 HKT3 落地'].proxies).toEqual([
+            '🇭🇰 手动节点 - HK-HKT3',
+            '🇭🇰 手动节点 - HK-HKT3-via-HK'
+        ]);
+        expect(groups['🇬🇧 GUID2 落地'].proxies).toEqual([
+            '🇬🇧 手动节点 - UK-GUID2',
+            '🇬🇧 手动节点 - UK-GUID2-via-HK'
+        ]);
+        expect(groups['🇬🇧 LISA 落地'].proxies).toEqual([
+            '🇬🇧 手动节点 - UK-LISA',
+            '🇬🇧 手动节点 - UK-LISA-via-BWH',
+            '🇬🇧 手动节点 - UK-LISA-via-HK'
+        ]);
         expect(groups['🇬🇧 英国落地'].proxies).toEqual([
-            '🇭🇰 手动节点 - HK-to-UK-Residential',
-            '🇬🇧 手动节点 - UK-Residential-Exit'
+            '🇬🇧 LISA 落地',
+            '🇬🇧 GUID2 落地',
+            '👋 手动切换'
         ]);
-        expect(groups['🇯🇵 日本落地'].proxies).toEqual(['🇯🇵 手动节点 - jp-KDDI-home-HKRelay']);
-        expect(groups['🇹🇼 台湾落地'].proxies).toEqual(['🇨🇳 手动节点 - tw-Hinet-home-HKRelay']);
-        expect(groups['🇺🇸 美国落地'].proxies).toEqual(['🇺🇸 手动节点 - DMIT-US-Landing']);
+        expect(groups['🇯🇵 日本落地'].proxies).toEqual([
+            '🇯🇵 手动节点 - JP-KDDI',
+            '🇯🇵 手动节点 - JP-KDDI-via-HK',
+            '🇯🇵 手动节点 - JP-KDDI-via-DMIT'
+        ]);
+        expect(groups['🇹🇼 台湾落地'].proxies).toEqual([
+            '🇹🇼 手动节点 - TW-Hinet',
+            '🇹🇼 手动节点 - TW-Hinet-via-HK',
+            '🇹🇼 手动节点 - TW-Hinet-via-DMIT'
+        ]);
         expect(groups['🏠 家宽池'].proxies).toEqual([
-            '🇬🇧 英国落地',
             '🇹🇼 台湾落地',
             '🇺🇸 美国落地',
+            '🇬🇧 英国落地',
             '🇯🇵 日本落地',
+            '🇭🇰 HKT3 落地',
             '👋 手动切换'
         ]);
         expect(groups['🤖 智能 AI'].proxies.slice(0, 4)).toEqual([
             '🇹🇼 台湾落地',
-            '🇬🇧 英国落地',
             '🇺🇸 美国落地',
+            '🇬🇧 英国落地',
             '🏠 家宽池'
         ]);
         expect(groups['🏰 Disney'].proxies[0]).toBe('🇺🇸 美国落地');
