@@ -150,6 +150,7 @@ ruleset=👋 手动切换,[]FINAL
         expect(groups['♻️ 日常自动'].proxies).toEqual(['🇺🇸 LA 机房线路', '🇭🇰 香港日常']);
         expect(groups['🇭🇰 香港日常'].proxies).toEqual([
             '🇭🇰 手动节点 - HK-HKT3',
+            '🇭🇰 手动节点 - HK-HKT3-via-HK',
             '🇭🇰 手动节点 - HK-VMISS',
             '🇭🇰 手动节点 - HK-ZGO'
         ]);
@@ -211,6 +212,8 @@ ruleset=👋 手动切换,[]FINAL
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,veo.google.com,🎬 AI 视频生成');
         expect(parsed.rules).toContain('DOMAIN,gemini.google.com,🤖 智能 AI');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,openrouter.ai,🤖 智能 AI');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,apple-cloudkit.com,🍎 Apple');
+        expect(parsed.rules).toContain('DOMAIN,time.apple.com,🍎 Apple');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,bbc.co.uk,🇬🇧 英国媒体');
     });
 
