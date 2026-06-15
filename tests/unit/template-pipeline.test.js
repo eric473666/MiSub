@@ -121,19 +121,15 @@ ruleset=👋 手动切换,[]FINAL
                 { name: '🇭🇰 手动节点 - HK-HKT3-via-HK', type: 'trojan', server: '192.0.2.7', port: 443, password: 'pass' },
                 { name: '🇬🇧 手动节点 - UK-GUID2-via-HK', type: 'trojan', server: '192.0.2.8', port: 443, password: 'pass' },
                 { name: '🇬🇧 手动节点 - UK-LISA-via-HK', type: 'trojan', server: '192.0.2.9', port: 443, password: 'pass' },
-                { name: '🇯🇵 手动节点 - JP-KDDI-via-DMIT', type: 'trojan', server: '192.0.2.10', port: 443, password: 'pass' },
-                { name: '🇹🇼 手动节点 - TW-Hinet-via-DMIT', type: 'trojan', server: '192.0.2.11', port: 443, password: 'pass' },
+                { name: '🇯🇵 手动节点 - JP-JPKD2-via-HK', type: 'trojan', server: '192.0.2.10', port: 443, password: 'pass' },
+                { name: '🇯🇵 手动节点 - JP-JPKD2', type: 'trojan', server: '192.0.2.11', port: 443, password: 'pass' },
                 { name: '🇺🇸 手动节点 - US-DMIT', type: 'trojan', server: '192.0.2.12', port: 443, password: 'pass' },
                 { name: '🇬🇧 手动节点 - UK-LISA-via-BWH', type: 'trojan', server: '192.0.2.13', port: 443, password: 'pass' },
                 { name: '🇺🇸 手动节点 - US-BWH', type: 'trojan', server: '192.0.2.14', port: 443, password: 'pass' },
                 { name: '🇬🇧 手动节点 - UK-LISA', type: 'trojan', server: '192.0.2.15', port: 443, password: 'pass' },
-                { name: '🇹🇼 手动节点 - TW-Hinet-via-HK', type: 'trojan', server: '192.0.2.16', port: 443, password: 'pass' },
-                { name: '🇯🇵 手动节点 - JP-KDDI-via-HK', type: 'trojan', server: '192.0.2.17', port: 443, password: 'pass' },
-                { name: '🇭🇰 手动节点 - HK-VMISS', type: 'trojan', server: '192.0.2.18', port: 443, password: 'pass' },
-                { name: '🇯🇵 手动节点 - JP-KDDI', type: 'trojan', server: '192.0.2.19', port: 443, password: 'pass' },
-                { name: '🇹🇼 手动节点 - TW-Hinet', type: 'trojan', server: '192.0.2.20', port: 443, password: 'pass' },
-                { name: '🇺🇸 手动节点 - US-ZG-LA', type: 'trojan', server: '192.0.2.21', port: 443, password: 'pass' },
-                { name: '🇭🇰 手动节点 - HK-ZGO', type: 'trojan', server: '192.0.2.22', port: 443, password: 'pass' }
+                { name: '🇭🇰 手动节点 - HK-VMISS', type: 'trojan', server: '192.0.2.16', port: 443, password: 'pass' },
+                { name: '🇺🇸 手动节点 - US-ZG-LA', type: 'trojan', server: '192.0.2.17', port: 443, password: 'pass' },
+                { name: '🇭🇰 手动节点 - HK-ZGO', type: 'trojan', server: '192.0.2.18', port: 443, password: 'pass' }
             ]
         });
 
@@ -183,33 +179,37 @@ ruleset=👋 手动切换,[]FINAL
             '👋 手动切换'
         ]);
         expect(groups['🇯🇵 日本落地'].proxies).toEqual([
-            '🇯🇵 手动节点 - JP-KDDI',
-            '🇯🇵 手动节点 - JP-KDDI-via-HK',
-            '🇯🇵 手动节点 - JP-KDDI-via-DMIT'
+            '🇯🇵 手动节点 - JP-JPKD2-via-HK',
+            '🇯🇵 手动节点 - JP-JPKD2'
         ]);
-        expect(groups['🇹🇼 台湾落地'].proxies).toEqual([
-            '🇹🇼 手动节点 - TW-Hinet',
-            '🇹🇼 手动节点 - TW-Hinet-via-HK',
-            '🇹🇼 手动节点 - TW-Hinet-via-DMIT'
-        ]);
+        expect(groups['🇹🇼 台湾落地']).toBeUndefined();
         expect(groups['🏠 家宽池'].proxies).toEqual([
-            '🇹🇼 台湾落地',
             '🇺🇸 美国落地',
             '🇬🇧 英国落地',
             '🇯🇵 日本落地',
             '🇭🇰 HKT3 落地',
             '👋 手动切换'
         ]);
-        expect(groups['🤖 智能 AI'].proxies.slice(0, 4)).toEqual([
-            '🇹🇼 台湾落地',
+        expect(groups['💻 Codex'].proxies).toEqual([
+            '🇺🇸 LA 机房线路',
             '🇺🇸 美国落地',
+            '👋 手动切换',
+            '🇯🇵 日本落地',
             '🇬🇧 英国落地',
-            '🏠 家宽池'
+            'DIRECT'
+        ]);
+        expect(groups['🤖 智能 AI'].proxies.slice(0, 4)).toEqual([
+            '💻 Codex',
+            '🇺🇸 LA 机房线路',
+            '🇺🇸 美国落地',
+            '🇯🇵 日本落地'
         ]);
         expect(groups['🏰 Disney'].proxies[0]).toBe('🇺🇸 美国落地');
         expect(groups['🤖 智能 AI'].proxies).toContain('🇺🇸 LA 机房线路');
         expect(groups['🤖 智能 AI'].proxies).not.toContain('♻️ 日常自动');
         expect(groups['🎙 AI 语音解说'].proxies).not.toContain('♻️ 日常自动');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,chatgpt.com,💻 Codex');
+        expect(parsed.rules).toContain('DOMAIN,codex.openai.com,💻 Codex');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,elevenlabs.io,🎙 AI 语音解说');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,cartesia.ai,🎙 AI 语音解说');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,sora.com,🎬 AI 视频生成');
