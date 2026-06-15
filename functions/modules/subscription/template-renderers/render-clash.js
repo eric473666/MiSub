@@ -74,26 +74,11 @@ const DEFAULT_DNS_CONFIG = {
         'https://doh.pub/dns-query'
     ],
     'nameserver-policy': {
-        '+.xiaohongshu.com': [
-            'https://dns.alidns.com/dns-query',
-            'https://doh.pub/dns-query'
-        ],
-        '+.xhscdn.com': [
-            'https://dns.alidns.com/dns-query',
-            'https://doh.pub/dns-query'
-        ],
-        '+.xhslink.com': [
-            'https://dns.alidns.com/dns-query',
-            'https://doh.pub/dns-query'
-        ],
-        'geosite:cn': [
-            'https://dns.alidns.com/dns-query',
-            'https://doh.pub/dns-query'
-        ],
-        'geosite:geolocation-!cn': [
-            'https://1.1.1.1/dns-query#🚀 默认代理',
-            'https://8.8.8.8/dns-query#🚀 默认代理'
-        ]
+        '+.xiaohongshu.com': 'https://dns.alidns.com/dns-query',
+        '+.xhscdn.com': 'https://dns.alidns.com/dns-query',
+        '+.xhslink.com': 'https://dns.alidns.com/dns-query',
+        'geosite:cn': 'https://dns.alidns.com/dns-query',
+        'geosite:geolocation-!cn': 'https://1.1.1.1/dns-query#🚀 默认代理'
     }
 };
 

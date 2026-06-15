@@ -190,26 +190,19 @@ ruleset=👋 手动切换,[]FINAL
             '🇭🇰 HKT3 落地',
             '👋 手动切换'
         ]);
-        expect(groups['💻 Codex'].proxies).toEqual([
-            '🇺🇸 LA 机房线路',
-            '🇺🇸 美国落地',
-            '👋 手动切换',
-            '🇯🇵 日本落地',
-            '🇬🇧 英国落地',
-            'DIRECT'
-        ]);
+        expect(groups['💻 Codex']).toBeUndefined();
         expect(groups['🤖 智能 AI'].proxies.slice(0, 4)).toEqual([
-            '💻 Codex',
-            '🇺🇸 LA 机房线路',
             '🇺🇸 美国落地',
-            '🇯🇵 日本落地'
+            '🇺🇸 LA 机房线路',
+            '🇯🇵 日本落地',
+            '🇬🇧 英国落地'
         ]);
         expect(groups['🏰 Disney'].proxies[0]).toBe('🇺🇸 美国落地');
         expect(groups['🤖 智能 AI'].proxies).toContain('🇺🇸 LA 机房线路');
         expect(groups['🤖 智能 AI'].proxies).not.toContain('♻️ 日常自动');
         expect(groups['🎙 AI 语音解说'].proxies).not.toContain('♻️ 日常自动');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,chatgpt.com,💻 Codex');
-        expect(parsed.rules).toContain('DOMAIN,codex.openai.com,💻 Codex');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,chatgpt.com,🤖 智能 AI');
+        expect(parsed.rules).not.toContain('DOMAIN,codex.openai.com,💻 Codex');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,elevenlabs.io,🎙 AI 语音解说');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,cartesia.ai,🎙 AI 语音解说');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,sora.com,🎬 AI 视频生成');
@@ -222,6 +215,8 @@ ruleset=👋 手动切换,[]FINAL
         expect(parsed.ipv6).toBe(false);
         expect(parsed['tcp-concurrent']).toBe(true);
         expect(parsed.dns['fake-ip-filter']).toContain('+.xhscdn.com');
+        expect(parsed.dns['nameserver-policy']['+.xhscdn.com']).toBe('https://dns.alidns.com/dns-query');
+        expect(parsed.dns['nameserver-policy']['geosite:geolocation-!cn']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');
     });
 
     it('should keep Clash template relay-like groups as plain select without dialer-proxy', () => {
