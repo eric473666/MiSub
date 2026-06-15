@@ -43,6 +43,60 @@ function toClashRuleProviderUrl(sourceUrl) {
     }
 }
 
+const DEFAULT_DNS_CONFIG = {
+    enable: true,
+    listen: '0.0.0.0:1053',
+    ipv6: false,
+    'enhanced-mode': 'fake-ip',
+    'fake-ip-range': '198.18.0.1/16',
+    'fake-ip-filter': [
+        '*.lan',
+        '*.local',
+        'localhost',
+        'time.*.com',
+        'ntp.*.com',
+        '+.msftconnecttest.com',
+        '+.msftncsi.com',
+        '+.xiaohongshu.com',
+        '+.xhscdn.com',
+        '+.xhslink.com'
+    ],
+    'default-nameserver': [
+        '223.5.5.5',
+        '119.29.29.29'
+    ],
+    nameserver: [
+        'https://dns.alidns.com/dns-query',
+        'https://doh.pub/dns-query'
+    ],
+    'proxy-server-nameserver': [
+        'https://dns.alidns.com/dns-query',
+        'https://doh.pub/dns-query'
+    ],
+    'nameserver-policy': {
+        '+.xiaohongshu.com': [
+            'https://dns.alidns.com/dns-query',
+            'https://doh.pub/dns-query'
+        ],
+        '+.xhscdn.com': [
+            'https://dns.alidns.com/dns-query',
+            'https://doh.pub/dns-query'
+        ],
+        '+.xhslink.com': [
+            'https://dns.alidns.com/dns-query',
+            'https://doh.pub/dns-query'
+        ],
+        'geosite:cn': [
+            'https://dns.alidns.com/dns-query',
+            'https://doh.pub/dns-query'
+        ],
+        'geosite:geolocation-!cn': [
+            'https://1.1.1.1/dns-query#🚀 默认代理',
+            'https://8.8.8.8/dns-query#🚀 默认代理'
+        ]
+    }
+};
+
 function mapRule(rule, ruleProviderMap) {
     const type = String(rule.type || '').toUpperCase();
     if (!type) return null;
@@ -96,7 +150,10 @@ export function renderClashFromTemplateModel(model) {
         'allow-lan': true,
         'mode': 'rule',
         'log-level': 'info',
+        'ipv6': false,
+        'tcp-concurrent': true,
         'external-controller': ':9090',
+        'dns': DEFAULT_DNS_CONFIG,
         'proxies': normalizedModel.proxies,
         'proxy-groups': normalizedModel.groups
             .filter(group => Array.isArray(group.members) && group.members.length > 0)

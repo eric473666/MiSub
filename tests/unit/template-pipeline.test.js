@@ -49,6 +49,10 @@ MATCH,节点选择
         expect(parsed['proxy-groups'][0].name).toBe('节点选择');
         expect(parsed.rules).toContain('MATCH,节点选择');
         expect(parsed.profile['subscription-url']).toBe('https://example.com/sub');
+        expect(parsed.ipv6).toBe(false);
+        expect(parsed.dns['enhanced-mode']).toBe('fake-ip');
+        expect(parsed.dns['fake-ip-filter']).toContain('+.xiaohongshu.com');
+        expect(parsed.dns['nameserver-policy']['geosite:geolocation-!cn']).toContain('https://1.1.1.1/dns-query#🚀 默认代理');
     });
 
     it('should exclude DIRECT from auto-select groups when rendering templates', () => {
@@ -215,6 +219,9 @@ ruleset=👋 手动切换,[]FINAL
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,apple-cloudkit.com,🍎 Apple');
         expect(parsed.rules).toContain('DOMAIN,time.apple.com,🍎 Apple');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,bbc.co.uk,🇬🇧 英国媒体');
+        expect(parsed.ipv6).toBe(false);
+        expect(parsed['tcp-concurrent']).toBe(true);
+        expect(parsed.dns['fake-ip-filter']).toContain('+.xhscdn.com');
     });
 
     it('should keep Clash template relay-like groups as plain select without dialer-proxy', () => {
