@@ -27,17 +27,23 @@ function toClashRuleProviderUrl(sourceUrl) {
         if (!/raw\.githubusercontent\.com$/i.test(url.hostname)) return sourceUrl;
         if (!/\/Clash\/.*\.(list|txt)$/i.test(url.pathname)) return sourceUrl;
 
-        if (/\/Clash\/Ruleset\//i.test(url.pathname)) {
-            url.pathname = url.pathname
-                .replace(/\/Clash\/Ruleset\//i, '/Clash/Providers/Ruleset/')
-                .replace(/\.(list|txt)$/i, '.yaml');
-        } else {
-            url.pathname = url.pathname
-                .replace(/\/Clash\//i, '/Clash/Providers/')
-                .replace(/\.(list|txt)$/i, '.yaml');
+        const pathParts = url.pathname.split('/').filter(Boolean);
+        const [owner, repo, ref, ...repoPathParts] = pathParts;
+        const repoPath = `/${repoPathParts.join('/')}`;
+        const yamlPath = repoPath.replace(/\.(list|txt)$/i, '.yaml');
+        const ghCdn = new URL(`https://cdn.jsdelivr.net/gh/${owner}/${repo}@${ref}${yamlPath}`);
+
+        if (/^blackmatrix7$/i.test(owner) && /^ios_rule_script$/i.test(repo) && /^\/rule\/Clash\//i.test(repoPath)) {
+            return ghCdn.toString();
         }
 
-        return url.toString();
+        if (/\/Clash\/Ruleset\//i.test(repoPath)) {
+            ghCdn.pathname = ghCdn.pathname.replace(/\/Clash\/Ruleset\//i, '/Clash/Providers/Ruleset/');
+            return ghCdn.toString();
+        }
+
+        ghCdn.pathname = ghCdn.pathname.replace(/\/Clash\//i, '/Clash/Providers/');
+        return ghCdn.toString();
     } catch {
         return sourceUrl;
     }
@@ -52,6 +58,10 @@ const DEFAULT_DNS_CONFIG = {
     'fake-ip-filter': [
         '*.lan',
         '*.local',
+        '*.home.arpa',
+        '*.localdomain',
+        'home.arpa',
+        'homeassistant.local',
         'localhost',
         'time.*.com',
         'ntp.*.com',
@@ -77,6 +87,15 @@ const DEFAULT_DNS_CONFIG = {
         '+.xiaohongshu.com': 'https://dns.alidns.com/dns-query',
         '+.xhscdn.com': 'https://dns.alidns.com/dns-query',
         '+.xhslink.com': 'https://dns.alidns.com/dns-query',
+        '+.googleapis.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
+        '+.googleapis.cn': 'https://1.1.1.1/dns-query#🚀 默认代理',
+        '+.googleusercontent.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
+        '+.gstatic.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
+        '+.gvt0.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
+        '+.gvt1.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
+        '+.gvt2.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
+        '+.gvt3.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
+        '+.xn--ngstr-lra8j.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
         'geosite:cn': 'https://dns.alidns.com/dns-query',
         'geosite:geolocation-!cn': 'https://1.1.1.1/dns-query#🚀 默认代理'
     }

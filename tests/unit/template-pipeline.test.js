@@ -141,18 +141,26 @@ ruleset=👋 手动切换,[]FINAL
         expect(groups['🇺🇸 BWH-LA 日常']).toBeUndefined();
         expect(groups['🇺🇸 DMIT/LA 日常']).toBeUndefined();
         expect(groups['🇬🇧 英国出口']).toBeUndefined();
+        expect(groups['🚀 默认代理'].proxies).toEqual([
+            '♻️ 日常自动',
+            '🇭🇰 香港日常',
+            '🇺🇸 LA 机房线路',
+            '👋 手动切换',
+            'DIRECT',
+            '🏠 家宽池'
+        ]);
         expect(groups['🇺🇸 LA 机房线路'].type).toBe('select');
         expect(groups['🇺🇸 LA 机房线路'].proxies).toEqual([
             '🇺🇸 手动节点 - US-BWH',
             '🇺🇸 手动节点 - US-DMIT',
             '🇺🇸 手动节点 - US-ZG-LA'
         ]);
-        expect(groups['♻️ 日常自动'].proxies).toEqual(['🇺🇸 LA 机房线路', '🇭🇰 香港日常']);
+        expect(groups['♻️ 日常自动'].proxies).toEqual(['🇭🇰 香港日常', '🇺🇸 LA 机房线路']);
         expect(groups['🇭🇰 香港日常'].proxies).toEqual([
-            '🇭🇰 手动节点 - HK-HKT3',
-            '🇭🇰 手动节点 - HK-HKT3-via-HK',
             '🇭🇰 手动节点 - HK-VMISS',
-            '🇭🇰 手动节点 - HK-ZGO'
+            '🇭🇰 手动节点 - HK-ZGO',
+            '🇭🇰 手动节点 - HK-HKT3-via-HK',
+            '🇭🇰 手动节点 - HK-HKT3'
         ]);
         expect(groups['🇺🇸 美国落地'].proxies).toEqual([
             '🇺🇸 手动节点 - US-USAT3',
@@ -183,6 +191,13 @@ ruleset=👋 手动切换,[]FINAL
             '🇯🇵 手动节点 - JP-JPKD2'
         ]);
         expect(groups['🇹🇼 台湾落地']).toBeUndefined();
+        expect(groups['📱 Google Play'].type).toBe('fallback');
+        expect(groups['📱 Google Play'].proxies).toEqual([
+            '🇭🇰 香港日常',
+            '🇺🇸 LA 机房线路',
+            '♻️ 日常自动',
+            '👋 手动切换'
+        ]);
         expect(groups['🏠 家宽池'].proxies).toEqual([
             '🇺🇸 美国落地',
             '🇬🇧 英国落地',
@@ -212,11 +227,27 @@ ruleset=👋 手动切换,[]FINAL
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,apple-cloudkit.com,🍎 Apple');
         expect(parsed.rules).toContain('DOMAIN,time.apple.com,🍎 Apple');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,bbc.co.uk,🇬🇧 英国媒体');
+        expect(parsed.rules).toContain('DOMAIN,homeassistant.local,DIRECT');
+        expect(parsed.rules).toContain('IP-CIDR,192.168.5.0/24,DIRECT');
+        expect(parsed.rules).toContain('IP-CIDR,192.168.20.0/24,DIRECT');
+        expect(parsed.rules).toContain('DOMAIN,android.clients.google.com,📱 Google Play');
+        expect(parsed.rules).toContain('DOMAIN,play.googleapis.com,📱 Google Play');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,gvt1.com,📱 Google Play');
+        expect(parsed.rules.indexOf('DOMAIN-SUFFIX,googleapis.cn,📱 Google Play')).toBeLessThan(
+            parsed.rules.indexOf('DOMAIN-SUFFIX,cn,DIRECT')
+        );
         expect(parsed.ipv6).toBe(false);
         expect(parsed['tcp-concurrent']).toBe(true);
+        expect(parsed.dns['fake-ip-filter']).toContain('homeassistant.local');
+        expect(parsed.dns['fake-ip-filter']).toContain('*.home.arpa');
         expect(parsed.dns['fake-ip-filter']).toContain('+.xhscdn.com');
         expect(parsed.dns['nameserver-policy']['+.xhscdn.com']).toBe('https://dns.alidns.com/dns-query');
+        expect(parsed.dns['nameserver-policy']['+.googleapis.cn']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');
+        expect(parsed.dns['nameserver-policy']['+.gvt1.com']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');
         expect(parsed.dns['nameserver-policy']['geosite:geolocation-!cn']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');
+        const providerUrls = Object.values(parsed['rule-providers'] || {}).map(provider => provider.url);
+        expect(providerUrls.some(url => String(url).includes('/rule/Clash/Google/Google.yaml'))).toBe(true);
+        expect(providerUrls.every(url => !String(url).includes('/rule/Clash/Providers/'))).toBe(true);
     });
 
     it('should keep Clash template relay-like groups as plain select without dialer-proxy', () => {
@@ -499,6 +530,7 @@ custom_proxy_group=TestGroup`;
         const providerUrls = Object.values(providers).map(provider => provider.url);
 
         expect(providerUrls.length).toBeGreaterThan(0);
+        expect(providerUrls.every(url => String(url).startsWith('https://cdn.jsdelivr.net/gh/'))).toBe(true);
         expect(providerUrls.some(url => String(url).includes('/Clash/Providers/Ruleset/YouTube.yaml'))).toBe(true);
         expect(providerUrls.some(url => String(url).includes('/Clash/Providers/ProxyGFWlist.yaml'))).toBe(true);
         expect(providerUrls.every(url => !String(url).endsWith('.list'))).toBe(true);
