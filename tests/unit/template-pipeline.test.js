@@ -142,9 +142,9 @@ ruleset=👋 手动切换,[]FINAL
         expect(groups['🇺🇸 DMIT/LA 日常']).toBeUndefined();
         expect(groups['🇬🇧 英国出口']).toBeUndefined();
         expect(groups['🚀 默认代理'].proxies).toEqual([
+            '🇺🇸 LA 机房线路',
             '♻️ 日常自动',
             '🇭🇰 香港日常',
-            '🇺🇸 LA 机房线路',
             '👋 手动切换',
             'DIRECT',
             '🏠 家宽池'
@@ -152,10 +152,9 @@ ruleset=👋 手动切换,[]FINAL
         expect(groups['🇺🇸 LA 机房线路'].type).toBe('select');
         expect(groups['🇺🇸 LA 机房线路'].proxies).toEqual([
             '🇺🇸 手动节点 - US-BWH',
-            '🇺🇸 手动节点 - US-DMIT',
-            '🇺🇸 手动节点 - US-ZG-LA'
+            '🇺🇸 手动节点 - US-DMIT'
         ]);
-        expect(groups['♻️ 日常自动'].proxies).toEqual(['🇭🇰 香港日常', '🇺🇸 LA 机房线路']);
+        expect(groups['♻️ 日常自动'].proxies).toEqual(['🇺🇸 LA 机房线路', '🇭🇰 香港日常']);
         expect(groups['🇭🇰 香港日常'].proxies).toEqual([
             '🇭🇰 手动节点 - HK-VMISS',
             '🇭🇰 手动节点 - HK-ZGO',
@@ -191,6 +190,13 @@ ruleset=👋 手动切换,[]FINAL
             '🇯🇵 手动节点 - JP-JPKD2'
         ]);
         expect(groups['🇹🇼 台湾落地']).toBeUndefined();
+        expect(groups['🌐 社交媒体'].proxies).toEqual([
+            '🇺🇸 LA 机房线路',
+            '♻️ 日常自动',
+            '🇭🇰 香港日常',
+            '👋 手动切换',
+            'DIRECT'
+        ]);
         expect(groups['📱 Google Play'].type).toBe('fallback');
         expect(groups['📱 Google Play'].proxies).toEqual([
             '🇭🇰 香港日常',
@@ -227,6 +233,10 @@ ruleset=👋 手动切换,[]FINAL
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,apple-cloudkit.com,🍎 Apple');
         expect(parsed.rules).toContain('DOMAIN,time.apple.com,🍎 Apple');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,bbc.co.uk,🇬🇧 英国媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,x.com,🌐 社交媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,instagram.com,🌐 社交媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,cdninstagram.com,🌐 社交媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,video.twimg.com,🌐 社交媒体');
         expect(parsed.rules).toContain('DOMAIN,homeassistant.local,DIRECT');
         expect(parsed.rules).toContain('IP-CIDR,192.168.5.0/24,DIRECT');
         expect(parsed.rules).toContain('IP-CIDR,192.168.20.0/24,DIRECT');
