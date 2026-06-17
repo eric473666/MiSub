@@ -51,6 +51,12 @@ describe('User-Agent Utils', () => {
 
             const params2 = new URLSearchParams('?clash=1');
             expect(determineTargetFormat('Other/1.0', params2)).toBe('clash');
+
+            const params3 = new URLSearchParams('?target=Shadowrocket-Conf');
+            expect(determineTargetFormat('Shadowrocket/2.0', params3)).toBe('shadowrocket-conf');
+
+            const params4 = new URLSearchParams('?shadowrocket-conf=1');
+            expect(determineTargetFormat('Other/1.0', params4)).toBe('shadowrocket-conf');
         });
 
         it('should normalize v2ray/trojan params to base64', () => {

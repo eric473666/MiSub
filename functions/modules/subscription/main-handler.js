@@ -19,6 +19,7 @@ import { groupNodeLinesByProtocol } from './protocol-groups.js';
 import { shouldApplyExternalTemplateForTarget } from './template-compatibility.js';
 import { renderClashFromIniTemplate, renderLoonFromIniTemplate, renderQuanxFromIniTemplate, renderSingboxFromIniTemplate, renderSurgeFromIniTemplate } from './template-pipeline.js';
 import { getBuiltinTemplate } from './builtin-template-registry.js';
+import { buildShadowrocketConfig } from './shadowrocket-config.js';
 
 const PROFILE_DOWNLOAD_COUNT_PREFIX = 'misub_profile_download_count_';
 
@@ -480,6 +481,21 @@ export async function handleMisubRequest(context) {
     const domain = url.hostname;
 
     // [Support] External Subconverter Logic
+    // 0. Shadowrocket needs a remote config for rules. Its default UA should still receive base64 nodes.
+    if (targetFormat === 'shadowrocket-conf') {
+        const headers = {
+            'Content-Type': 'text/plain; charset=utf-8',
+            'Content-Disposition': `attachment; filename="${String(subName || 'MiSub').replace(/[^\x20-\x7E]/g, '_')}-shadowrocket.conf"`,
+            'Cache-Control': 'no-store, no-cache',
+            'X-MiSub-Mode': 'shadowrocket-conf',
+            'Access-Control-Allow-Origin': '*'
+        };
+        Object.entries(cacheHeaders).forEach(([key, value]) => {
+            headers[key] = value;
+        });
+        return new Response(buildShadowrocketConfig(request.url), { headers });
+    }
+
     // 1. If 'nodes' format requested, return plain text nodes (DataSource for external converters)
     if (targetFormat === 'nodes') {
         const contentToReturn = isProfileExpired ? (DEFAULT_EXPIRED_NODE + '\n') : combinedNodeList;

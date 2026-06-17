@@ -30,7 +30,7 @@ export function determineTargetFormat(userAgent, searchParams) {
     // 1. Check URL parameters first
     let targetFormat = searchParams.get('target');
     if (!targetFormat) {
-        const supportedFormats = ['clash', 'singbox', 'surge', 'loon', 'base64', 'v2ray', 'trojan', 'quanx', 'egern', 'nodes'];
+        const supportedFormats = ['clash', 'singbox', 'surge', 'loon', 'base64', 'v2ray', 'trojan', 'quanx', 'egern', 'nodes', 'shadowrocket-conf'];
         for (const format of supportedFormats) {
             if (searchParams.has(format)) {
                 // Normalize v2ray/trojan to base64 as they share the output format
@@ -52,6 +52,9 @@ export function determineTargetFormat(userAgent, searchParams) {
         }
         if (normalizedTarget.startsWith('surge&ver=')) {
             return normalizedTarget;
+        }
+        if (normalizedTarget === 'shadowrocket-conf' || normalizedTarget === 'shadowrocket_config') {
+            return 'shadowrocket-conf';
         }
         return targetFormat;
     }
