@@ -65,13 +65,13 @@ function parseAclRuleSetLine(line) {
     if (parts.length < 2) return null;
 
     const policy = parts[0];
-    let source = parts.slice(1).join(',');
+    let source = parts[1] || '';
     
     // Clean up protocol prefixes like clash-classic:, surge:, etc.
     source = source.replace(/^(clash-classic|surge|quanx|loon|sing-box|singbox):/i, '');
     
     if (source.startsWith('[]')) {
-        const inlineValue = source.slice(2);
+        const inlineValue = parts.slice(1).join(',').slice(2);
         const inlineParts = inlineValue.split(',').map(part => part.trim()).filter(Boolean);
         const type = (inlineParts[0] || '').toLowerCase();
         return {
@@ -88,7 +88,7 @@ function parseAclRuleSetLine(line) {
         value: source,
         policy,
         source: 'remote',
-        extras: []
+        extras: parts.slice(2).filter(Boolean)
     };
 }
 

@@ -22,7 +22,14 @@ describe('Template pipeline', () => {
         expect(rendered).toContain('[Proxy Group]');
         expect(rendered).toContain(`policy-path=${nodeUrl}`);
         expect(rendered).toContain('🌐 社交媒体 = select, 🇺🇸 LA 机房线路');
+        expect(rendered).toContain('🛠 开发云服务 = select, 🇺🇸 LA 机房线路');
+        expect(rendered).toContain('📚 学术新闻 = select, 🇺🇸 LA 机房线路');
         expect(rendered).toContain('DOMAIN-SUFFIX,x.com,🌐 社交媒体');
+        expect(rendered).toContain('DOMAIN-SUFFIX,whatsapp.com,🌐 社交媒体');
+        expect(rendered).toContain('DOMAIN-SUFFIX,github.com,🛠 开发云服务');
+        expect(rendered).toContain('DOMAIN,registry.npmjs.org,🛠 开发云服务');
+        expect(rendered).toContain('DOMAIN-SUFFIX,twitch.tv,🎥 流媒体');
+        expect(rendered).toContain('DOMAIN-SUFFIX,wikipedia.org,📚 学术新闻');
         expect(rendered).toContain('DOMAIN,android.clients.google.com,📱 Google Play');
         expect(rendered).toContain('FINAL,🚀 默认代理');
     });
@@ -216,6 +223,20 @@ ruleset=👋 手动切换,[]FINAL
             '👋 手动切换',
             'DIRECT'
         ]);
+        expect(groups['🛠 开发云服务'].proxies).toEqual([
+            '🇺🇸 LA 机房线路',
+            '♻️ 日常自动',
+            '🇭🇰 香港日常',
+            '👋 手动切换',
+            'DIRECT'
+        ]);
+        expect(groups['📚 学术新闻'].proxies).toEqual([
+            '🇺🇸 LA 机房线路',
+            '♻️ 日常自动',
+            '🇭🇰 香港日常',
+            '👋 手动切换',
+            'DIRECT'
+        ]);
         expect(groups['📱 Google Play'].type).toBe('fallback');
         expect(groups['📱 Google Play'].proxies).toEqual([
             '🇭🇰 香港日常',
@@ -256,9 +277,24 @@ ruleset=👋 手动切换,[]FINAL
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,instagram.com,🌐 社交媒体');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,cdninstagram.com,🌐 社交媒体');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,video.twimg.com,🌐 社交媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,whatsapp.com,🌐 社交媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,discord.com,🌐 社交媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,reddit.com,🌐 社交媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,linkedin.com,🌐 社交媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,github.com,🛠 开发云服务');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,docker.io,🛠 开发云服务');
+        expect(parsed.rules).toContain('DOMAIN,registry.npmjs.org,🛠 开发云服务');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,twitch.tv,🎥 流媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,dazn.com,🎥 流媒体');
+        expect(parsed.rules).toContain('DOMAIN,tv.apple.com,🎥 流媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,biliintl.com,🎥 流媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,nicovideo.jp,🎥 流媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,coursera.org,📚 学术新闻');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,wikipedia.org,📚 学术新闻');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,nytimes.com,📚 学术新闻');
         expect(parsed.rules).toContain('DOMAIN,homeassistant.local,DIRECT');
-        expect(parsed.rules).toContain('IP-CIDR,192.168.5.0/24,DIRECT');
-        expect(parsed.rules).toContain('IP-CIDR,192.168.20.0/24,DIRECT');
+        expect(parsed.rules).toContain('IP-CIDR,192.168.5.0/24,DIRECT,no-resolve');
+        expect(parsed.rules).toContain('IP-CIDR,192.168.20.0/24,DIRECT,no-resolve');
         expect(parsed.rules).toContain('DOMAIN,android.clients.google.com,📱 Google Play');
         expect(parsed.rules).toContain('DOMAIN,play.googleapis.com,📱 Google Play');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,gvt1.com,📱 Google Play');
@@ -274,9 +310,28 @@ ruleset=👋 手动切换,[]FINAL
         expect(parsed.dns['nameserver-policy']['+.googleapis.cn']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');
         expect(parsed.dns['nameserver-policy']['+.gvt1.com']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');
         expect(parsed.dns['nameserver-policy']['geosite:geolocation-!cn']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');
-        const providerUrls = Object.values(parsed['rule-providers'] || {}).map(provider => provider.url);
+        const providers = parsed['rule-providers'] || {};
+        const providerUrls = Object.values(providers).map(provider => provider.url);
         expect(providerUrls.some(url => String(url).includes('/rule/Clash/Google/Google.yaml'))).toBe(true);
         expect(providerUrls.every(url => !String(url).includes('/rule/Clash/Providers/'))).toBe(true);
+        const twitterIpProvider = Object.entries(providers).find(([, provider]) => String(provider.url).includes('/geo/geoip/twitter.mrs'));
+        const githubProvider = Object.entries(providers).find(([, provider]) => String(provider.url).includes('/geo/geosite/github.mrs'));
+        const privateIpProvider = Object.entries(providers).find(([, provider]) => String(provider.url).includes('/geo/geoip/private.mrs'));
+        expect(twitterIpProvider?.[1]).toMatchObject({
+            behavior: 'ipcidr',
+            format: 'mrs'
+        });
+        expect(twitterIpProvider?.[1].path).toMatch(/\.mrs$/);
+        expect(githubProvider?.[1]).toMatchObject({
+            behavior: 'domain',
+            format: 'mrs'
+        });
+        expect(privateIpProvider?.[1]).toMatchObject({
+            behavior: 'ipcidr',
+            format: 'mrs'
+        });
+        expect(parsed.rules).toContain(`RULE-SET,${twitterIpProvider?.[0]},🌐 社交媒体,no-resolve`);
+        expect(parsed.rules).toContain(`RULE-SET,${privateIpProvider?.[0]},DIRECT,no-resolve`);
     });
 
     it('should keep Clash template relay-like groups as plain select without dialer-proxy', () => {

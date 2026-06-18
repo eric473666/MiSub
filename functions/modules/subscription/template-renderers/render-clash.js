@@ -49,6 +49,39 @@ function toClashRuleProviderUrl(sourceUrl) {
     }
 }
 
+function getMrsRuleProviderKind(providerUrl) {
+    try {
+        const urlPath = new URL(providerUrl).pathname;
+        const match = urlPath.match(/(?:^|\/)geo\/(geosite|geoip)\/[^/]+\.mrs$/i);
+        if (!match) return null;
+        return match[1].toLowerCase();
+    } catch {
+        return null;
+    }
+}
+
+function createRuleProvider(providerUrl, providerName) {
+    const mrsKind = getMrsRuleProviderKind(providerUrl);
+    if (mrsKind) {
+        return {
+            type: 'http',
+            behavior: mrsKind === 'geoip' ? 'ipcidr' : 'domain',
+            format: 'mrs',
+            url: providerUrl,
+            path: `./ruleset/${providerName}.mrs`,
+            interval: 86400
+        };
+    }
+
+    return {
+        type: 'http',
+        behavior: 'classical',
+        url: providerUrl,
+        path: `./ruleset/${providerName}.yaml`,
+        interval: 86400
+    };
+}
+
 const DEFAULT_DNS_CONFIG = {
     enable: true,
     listen: '0.0.0.0:1053',
@@ -101,16 +134,24 @@ const DEFAULT_DNS_CONFIG = {
     }
 };
 
+function appendRuleExtras(ruleText, extras) {
+    const cleanedExtras = Array.isArray(extras)
+        ? extras.map(item => String(item || '').trim()).filter(Boolean)
+        : [];
+    if (cleanedExtras.length === 0) return ruleText;
+    return `${ruleText},${cleanedExtras.join(',')}`;
+}
+
 function mapRule(rule, ruleProviderMap) {
     const type = String(rule.type || '').toUpperCase();
     if (!type) return null;
     if (type === 'MATCH' || type === 'FINAL') return `MATCH,${rule.policy}`;
-    if (type === 'GEOIP') return `GEOIP,${rule.value || 'CN'},${rule.policy}`;
+    if (type === 'GEOIP') return appendRuleExtras(`GEOIP,${rule.value || 'CN'},${rule.policy}`, rule.extras);
     if (type === 'RULE-SET') {
         const providerName = ruleProviderMap.get(rule.value);
-        return `RULE-SET,${providerName || rule.value},${rule.policy}`;
+        return appendRuleExtras(`RULE-SET,${providerName || rule.value},${rule.policy}`, rule.extras);
     }
-    return `${type},${rule.value},${rule.policy}`;
+    return appendRuleExtras(`${type},${rule.value},${rule.policy}`, rule.extras);
 }
 
 export function renderClashFromTemplateModel(model) {
@@ -130,7 +171,7 @@ export function renderClashFromTemplateModel(model) {
         let nameHint = 'rs';
         try {
             const urlPath = new URL(providerUrl).pathname;
-            const fileName = urlPath.split('/').pop()?.replace(/\.(yaml|yml|list|txt|conf)$/i, '') || '';
+            const fileName = urlPath.split('/').pop()?.replace(/\.(yaml|yml|list|txt|conf|mrs)$/i, '') || '';
             if (fileName && fileName.length > 2) {
                 nameHint = fileName.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
             }
@@ -140,13 +181,7 @@ export function renderClashFromTemplateModel(model) {
 
         const providerName = `${nameHint}_${providerCounter++}`;
         ruleProviderMap.set(providerUrl, providerName);
-        ruleProviders[providerName] = {
-            type: 'http',
-            behavior: 'classical',
-            url: providerUrl,
-            path: `./ruleset/${providerName}.yaml`,
-            interval: 86400
-        };
+        ruleProviders[providerName] = createRuleProvider(providerUrl, providerName);
     });
 
     const config = {
