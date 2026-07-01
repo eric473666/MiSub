@@ -135,7 +135,7 @@ ruleset=👋 手动切换,[]FINAL
     });
 
     it('should render the active custom Clash template for the current manual nodes', () => {
-        const template = fs.readFileSync(new URL('../../public/misub-custom-clash.ini', import.meta.url), 'utf8');
+        const template = fs.readFileSync('public/misub-custom-clash.ini', 'utf8');
         const rendered = renderClashFromIniTemplate(template, {
             proxies: [
                 { name: '🇺🇸 手动节点 - US-USAT3-via-BWH', type: 'trojan', server: '192.0.2.1', port: 443, password: 'pass' },
@@ -212,6 +212,8 @@ ruleset=👋 手动切换,[]FINAL
             '👋 手动切换'
         ]);
         expect(groups['🇯🇵 日本落地'].proxies).toEqual([
+            '🇭🇰 香港日常',
+            '🇺🇸 LA 机房线路',
             '🇯🇵 手动节点 - JP-JPKD2-via-HK',
             '🇯🇵 手动节点 - JP-JPKD2'
         ]);
@@ -243,6 +245,13 @@ ruleset=👋 手动切换,[]FINAL
             '🇺🇸 LA 机房线路',
             '♻️ 日常自动',
             '👋 手动切换'
+        ]);
+        expect(groups['📦 PikPak'].proxies).toEqual([
+            '🇺🇸 LA 机房线路',
+            '🇭🇰 香港日常',
+            '♻️ 日常自动',
+            '👋 手动切换',
+            'DIRECT'
         ]);
         expect(groups['🏠 家宽池'].proxies).toEqual([
             '🇺🇸 美国落地',
@@ -298,7 +307,19 @@ ruleset=👋 手动切换,[]FINAL
         expect(parsed.rules).toContain('DOMAIN,android.clients.google.com,📱 Google Play');
         expect(parsed.rules).toContain('DOMAIN,play.googleapis.com,📱 Google Play');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,gvt1.com,📱 Google Play');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,mypikpak.com,📦 PikPak');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,mypikpak.net,📦 PikPak');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,pikpak.com,📦 PikPak');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,pikpakdrive.com,📦 PikPak');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,pikpak.me,📦 PikPak');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,pikpak.io,📦 PikPak');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,pickpackapp.com,📦 PikPak');
+        expect(parsed.rules).toContain('DOMAIN-KEYWORD,mypikpak,📦 PikPak');
+        expect(parsed.rules).toContain('DOMAIN-KEYWORD,pikpak,📦 PikPak');
         expect(parsed.rules.indexOf('DOMAIN-SUFFIX,googleapis.cn,📱 Google Play')).toBeLessThan(
+            parsed.rules.indexOf('DOMAIN-SUFFIX,cn,DIRECT')
+        );
+        expect(parsed.rules.indexOf('DOMAIN-KEYWORD,pikpak,📦 PikPak')).toBeLessThan(
             parsed.rules.indexOf('DOMAIN-SUFFIX,cn,DIRECT')
         );
         expect(parsed.ipv6).toBe(false);
@@ -313,6 +334,8 @@ ruleset=👋 手动切换,[]FINAL
         const providers = parsed['rule-providers'] || {};
         const providerUrls = Object.values(providers).map(provider => provider.url);
         expect(providerUrls.some(url => String(url).includes('/rule/Clash/Google/Google.yaml'))).toBe(true);
+        expect(providerUrls.some(url => String(url).includes('/geo/geosite/pikpak.mrs'))).toBe(true);
+        expect(providerUrls.some(url => String(url).includes('/rule/Clash/PikPak/PikPak.yaml'))).toBe(true);
         expect(providerUrls.every(url => !String(url).includes('/rule/Clash/Providers/'))).toBe(true);
         const twitterIpProvider = Object.entries(providers).find(([, provider]) => String(provider.url).includes('/geo/geoip/twitter.mrs'));
         const githubProvider = Object.entries(providers).find(([, provider]) => String(provider.url).includes('/geo/geosite/github.mrs'));
