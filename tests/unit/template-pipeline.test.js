@@ -168,12 +168,11 @@ ruleset=👋 手动切换,[]FINAL
         expect(groups['🇺🇸 DMIT/LA 日常']).toBeUndefined();
         expect(groups['🇬🇧 英国出口']).toBeUndefined();
         expect(groups['🚀 默认代理'].proxies).toEqual([
-            '🇺🇸 LA 机房线路',
             '♻️ 日常自动',
+            '🇺🇸 LA 机房线路',
             '🇭🇰 香港日常',
             '👋 手动切换',
-            'DIRECT',
-            '🏠 家宽池'
+            'DIRECT'
         ]);
         expect(groups['🇺🇸 LA 机房线路'].type).toBe('select');
         expect(groups['🇺🇸 LA 机房线路'].proxies).toEqual([
@@ -212,8 +211,6 @@ ruleset=👋 手动切换,[]FINAL
             '👋 手动切换'
         ]);
         expect(groups['🇯🇵 日本落地'].proxies).toEqual([
-            '🇭🇰 香港日常',
-            '🇺🇸 LA 机房线路',
             '🇯🇵 手动节点 - JP-JPKD2-via-HK',
             '🇯🇵 手动节点 - JP-JPKD2'
         ]);
@@ -260,6 +257,14 @@ ruleset=👋 手动切换,[]FINAL
             '🇭🇰 HKT3 落地',
             '👋 手动切换'
         ]);
+        expect(groups['🎨 Adobe'].proxies).toEqual([
+            '🇯🇵 日本落地',
+            '🇬🇧 英国落地',
+            '🇺🇸 美国落地',
+            '🇺🇸 LA 机房线路',
+            'DIRECT',
+            '👋 手动切换'
+        ]);
         expect(groups['💻 Codex']).toBeUndefined();
         expect(groups['🤖 智能 AI'].proxies.slice(0, 4)).toEqual([
             '🇺🇸 美国落地',
@@ -279,9 +284,12 @@ ruleset=👋 手动切换,[]FINAL
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,veo.google.com,🎬 AI 视频生成');
         expect(parsed.rules).toContain('DOMAIN,gemini.google.com,🤖 智能 AI');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,openrouter.ai,🤖 智能 AI');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,adobe.com,🎨 Adobe');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,adobelogin.com,🎨 Adobe');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,apple-cloudkit.com,🍎 Apple');
         expect(parsed.rules).toContain('DOMAIN,time.apple.com,🍎 Apple');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,bbc.co.uk,🇬🇧 英国媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,now.com,🇬🇧 英国媒体');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,x.com,🌐 社交媒体');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,instagram.com,🌐 社交媒体');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,cdninstagram.com,🌐 社交媒体');
@@ -297,7 +305,8 @@ ruleset=👋 手动切换,[]FINAL
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,dazn.com,🎥 流媒体');
         expect(parsed.rules).toContain('DOMAIN,tv.apple.com,🎥 流媒体');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,biliintl.com,🎥 流媒体');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,nicovideo.jp,🎥 流媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,nicovideo.jp,🇯🇵 日本落地');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,nimg.jp,🇯🇵 日本落地');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,coursera.org,📚 学术新闻');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,wikipedia.org,📚 学术新闻');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,nytimes.com,📚 学术新闻');
@@ -322,11 +331,29 @@ ruleset=👋 手动切换,[]FINAL
         expect(parsed.rules.indexOf('DOMAIN-KEYWORD,pikpak,📦 PikPak')).toBeLessThan(
             parsed.rules.indexOf('DOMAIN-SUFFIX,cn,DIRECT')
         );
+        expect(parsed.rules.indexOf('DOMAIN-SUFFIX,adobe.com,🎨 Adobe')).toBeLessThan(
+            parsed.rules.indexOf('DOMAIN-SUFFIX,cn,DIRECT')
+        );
+        const globalMediaRuleIndex = parsed.rules.findIndex(rule => rule.startsWith('RULE-SET,globalmedia'));
+        expect(parsed.rules.indexOf('DOMAIN-SUFFIX,nicovideo.jp,🇯🇵 日本落地')).toBeLessThan(globalMediaRuleIndex);
         expect(parsed.ipv6).toBe(false);
         expect(parsed['tcp-concurrent']).toBe(true);
         expect(parsed.dns['fake-ip-filter']).toContain('homeassistant.local');
         expect(parsed.dns['fake-ip-filter']).toContain('*.home.arpa');
         expect(parsed.dns['fake-ip-filter']).toContain('+.xhscdn.com');
+        const meituanDomains = [
+            '+.dianping.com',
+            '+.dpfile.com',
+            '+.maoyan.com',
+            '+.meituan.com',
+            '+.meituan.net',
+            '+.mtyun.com',
+            '+.sankuai.com'
+        ];
+        for (const domain of meituanDomains) {
+            expect(parsed.dns['fake-ip-filter']).toContain(domain);
+            expect(parsed.dns['nameserver-policy'][domain]).toBe('https://dns.alidns.com/dns-query');
+        }
         expect(parsed.dns['nameserver-policy']['+.xhscdn.com']).toBe('https://dns.alidns.com/dns-query');
         expect(parsed.dns['nameserver-policy']['+.googleapis.cn']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');
         expect(parsed.dns['nameserver-policy']['+.gvt1.com']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');
