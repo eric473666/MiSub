@@ -340,7 +340,23 @@ ruleset=👋 手动切换,[]FINAL
         expect(parsed['tcp-concurrent']).toBe(true);
         expect(parsed.dns['fake-ip-filter']).toContain('homeassistant.local');
         expect(parsed.dns['fake-ip-filter']).toContain('*.home.arpa');
-        expect(parsed.dns['fake-ip-filter']).toContain('+.xhscdn.com');
+        const xiaohongshuDomains = [
+            '+.fengkongcloud.com',
+            '+.xiaohongshu-mycdn.com',
+            '+.xiaohongshu.com',
+            '+.xiaohongshu.net',
+            '+.xhscdn.com',
+            '+.xhscdn.net',
+            '+.xhslink.com'
+        ];
+        for (const domain of xiaohongshuDomains) {
+            expect(parsed.dns['fake-ip-filter']).toContain(domain);
+            expect(parsed.dns['nameserver-policy'][domain]).toBeUndefined();
+        }
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,fengkongcloud.com,DIRECT');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,xiaohongshu-mycdn.com,DIRECT');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,xiaohongshu.net,DIRECT');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,xhscdn.net,DIRECT');
         const meituanDomains = [
             '+.dianping.com',
             '+.dpfile.com',
@@ -352,9 +368,13 @@ ruleset=👋 手动切换,[]FINAL
         ];
         for (const domain of meituanDomains) {
             expect(parsed.dns['fake-ip-filter']).toContain(domain);
-            expect(parsed.dns['nameserver-policy'][domain]).toBe('https://dns.alidns.com/dns-query');
+            expect(parsed.dns['nameserver-policy'][domain]).toBeUndefined();
         }
-        expect(parsed.dns['nameserver-policy']['+.xhscdn.com']).toBe('https://dns.alidns.com/dns-query');
+        expect(parsed.dns.nameserver).toEqual([
+            'https://dns.alidns.com/dns-query',
+            'https://doh.pub/dns-query'
+        ]);
+        expect(parsed.dns['nameserver-policy']['geosite:cn']).toBeUndefined();
         expect(parsed.dns['nameserver-policy']['+.googleapis.cn']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');
         expect(parsed.dns['nameserver-policy']['+.gvt1.com']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');
         expect(parsed.dns['nameserver-policy']['geosite:geolocation-!cn']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');

@@ -100,8 +100,12 @@ const DEFAULT_DNS_CONFIG = {
         'ntp.*.com',
         '+.msftconnecttest.com',
         '+.msftncsi.com',
+        '+.fengkongcloud.com',
+        '+.xiaohongshu-mycdn.com',
         '+.xiaohongshu.com',
+        '+.xiaohongshu.net',
         '+.xhscdn.com',
+        '+.xhscdn.net',
         '+.xhslink.com',
         '+.dianping.com',
         '+.dpfile.com',
@@ -124,16 +128,6 @@ const DEFAULT_DNS_CONFIG = {
         'https://doh.pub/dns-query'
     ],
     'nameserver-policy': {
-        '+.xiaohongshu.com': 'https://dns.alidns.com/dns-query',
-        '+.xhscdn.com': 'https://dns.alidns.com/dns-query',
-        '+.xhslink.com': 'https://dns.alidns.com/dns-query',
-        '+.dianping.com': 'https://dns.alidns.com/dns-query',
-        '+.dpfile.com': 'https://dns.alidns.com/dns-query',
-        '+.maoyan.com': 'https://dns.alidns.com/dns-query',
-        '+.meituan.com': 'https://dns.alidns.com/dns-query',
-        '+.meituan.net': 'https://dns.alidns.com/dns-query',
-        '+.mtyun.com': 'https://dns.alidns.com/dns-query',
-        '+.sankuai.com': 'https://dns.alidns.com/dns-query',
         '+.googleapis.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
         '+.googleapis.cn': 'https://1.1.1.1/dns-query#🚀 默认代理',
         '+.googleusercontent.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
@@ -143,7 +137,6 @@ const DEFAULT_DNS_CONFIG = {
         '+.gvt2.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
         '+.gvt3.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
         '+.xn--ngstr-lra8j.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
-        'geosite:cn': 'https://dns.alidns.com/dns-query',
         'geosite:geolocation-!cn': 'https://1.1.1.1/dns-query#🚀 默认代理'
     }
 };
