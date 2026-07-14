@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import yaml from 'js-yaml';
 import { ProcessorService, isIniTemplateSource } from '../../functions/services/processor-service.js';
 
 const NODE_LIST = 'trojan://pass@1.1.1.1:443#HK-01';
@@ -57,6 +58,26 @@ MATCH,MyGroup
         expect(result.contentType).toBe('application/x-yaml; charset=utf-8');
         expect(result.content).toContain('proxies:');
         expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('passes the Stash user agent into custom Clash rendering', async () => {
+        const result = await ProcessorService.renderOutput({
+            targetFormat: 'clash',
+            combinedNodeList: NODE_LIST,
+            subName: 'Demo',
+            config: { UpdateInterval: 86400 },
+            builtinOptions: { ruleLevel: 'std', enableUdp: true, skipCertVerify: false },
+            templateSource: { kind: 'remote', value: 'https://example.com/template.ini' },
+            managedConfigUrl: 'https://example.com/sub',
+            storageAdapter,
+            userAgent: 'Stash/3.2.5'
+        });
+
+        const parsed = yaml.load(result.content);
+        expect(parsed.dns['follow-rule']).toBe(false);
+        expect(parsed.dns['nameserver-policy']).toBeUndefined();
+        expect(parsed.dns['proxy-server-nameserver']).toBeUndefined();
+        expect(parsed.ipv6).toBeUndefined();
     });
 
     it('preserves managed config header for builtin quanx output', async () => {

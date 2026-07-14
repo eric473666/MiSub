@@ -725,6 +725,7 @@ export async function handleMisubRequest(context) {
                 managedConfigUrl,
                 storageAdapter,
                 userInfoHeader,
+                userAgent: userAgentHeader,
                 forceRefresh
             });
 

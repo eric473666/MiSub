@@ -75,6 +75,7 @@ export class ProcessorService {
             managedConfigUrl,
             storageAdapter,
             userInfoHeader,
+            userAgent = '',
             forceRefresh = false
         } = options || {};
 
@@ -123,7 +124,8 @@ export class ProcessorService {
                     managedConfigUrl,
                     skipCertVerify: builtinOptions.skipCertVerify,
                     enableUdp: builtinOptions.enableUdp,
-                    isMeta: builtinOptions.isMeta
+                    isMeta: builtinOptions.isMeta,
+                    userAgent
                 };
 
                 switch (targetFormat) {

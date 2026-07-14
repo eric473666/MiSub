@@ -40,7 +40,7 @@ export function renderClashFromIniTemplate(templateText, options = {}) {
     // 智能注入地区分组逻辑
     model = applySmartModelOptimizations(model);
     
-    return renderClashFromTemplateModel(model);
+    return renderClashFromTemplateModel(model, options);
 }
 
 export function renderSingboxFromIniTemplate(templateText, options = {}) {

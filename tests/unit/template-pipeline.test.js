@@ -81,6 +81,37 @@ MATCH,节点选择
         expect(parsed.dns['nameserver-policy']['geosite:geolocation-!cn']).toContain('https://1.1.1.1/dns-query#🚀 默认代理');
     });
 
+    it('should render Stash-safe DNS for ordinary Wi-Fi and cellular networks', () => {
+        const rendered = renderClashFromIniTemplate(`
+[Proxy Group]
+节点选择 = select, HK-01, DIRECT
+
+[Rule]
+DOMAIN-SUFFIX,meituan.com,DIRECT
+MATCH,节点选择
+        `, {
+            userAgent: 'Stash/3.2.5',
+            proxies: [
+                { name: 'HK-01', type: 'trojan', server: '1.1.1.1', port: 443, password: 'pass' }
+            ]
+        });
+
+        const parsed = yaml.load(rendered);
+        expect(parsed.ipv6).toBeUndefined();
+        expect(parsed['tcp-concurrent']).toBeUndefined();
+        expect(parsed.dns.ipv6).toBeUndefined();
+        expect(parsed.dns['follow-rule']).toBe(false);
+        expect(parsed.dns.nameserver).toEqual([
+            'https://dns.alidns.com/dns-query',
+            'https://doh.pub/dns-query'
+        ]);
+        expect(parsed.dns['proxy-server-nameserver']).toBeUndefined();
+        expect(parsed.dns['nameserver-policy']).toBeUndefined();
+        expect(parsed.dns['fake-ip-filter']).toContain('+.stun.*.*');
+        expect(parsed.dns['fake-ip-filter']).not.toContain('+.meituan.com');
+        expect(parsed.dns['fake-ip-filter']).not.toContain('+.xiaohongshu.com');
+    });
+
     it('should exclude DIRECT from auto-select groups when rendering templates', () => {
         const rendered = renderClashFromIniTemplate(`
 [Proxy Group]
@@ -357,6 +388,9 @@ ruleset=👋 手动切换,[]FINAL
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,xiaohongshu-mycdn.com,DIRECT');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,xiaohongshu.net,DIRECT');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,xhscdn.net,DIRECT');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,meituan-ad.com,DIRECT');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,rmtyun.com,DIRECT');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,zhufangdianping.com,DIRECT');
         const meituanDomains = [
             '+.dianping.com',
             '+.dpfile.com',
@@ -382,8 +416,13 @@ ruleset=👋 手动切换,[]FINAL
         const providerUrls = Object.values(providers).map(provider => provider.url);
         expect(providerUrls.some(url => String(url).includes('/rule/Clash/Google/Google.yaml'))).toBe(true);
         expect(providerUrls.some(url => String(url).includes('/geo/geosite/pikpak.mrs'))).toBe(true);
+        expect(providerUrls.some(url => String(url).includes('/geo/geosite/cn.mrs'))).toBe(true);
+        expect(providerUrls.some(url => String(url).includes('/geo/geoip/cn.mrs'))).toBe(true);
         expect(providerUrls.some(url => String(url).includes('/rule/Clash/PikPak/PikPak.yaml'))).toBe(true);
+        expect(providerUrls.every(url => !String(url).includes('/rule/Clash/ChinaMax/ChinaMax.yaml'))).toBe(true);
+        expect(providerUrls.every(url => !String(url).includes('/rule/Clash/WeChat/WeChat.yaml'))).toBe(true);
         expect(providerUrls.every(url => !String(url).includes('/rule/Clash/Providers/'))).toBe(true);
+        expect(Object.values(providers).filter(provider => provider.behavior === 'classical').length).toBeLessThanOrEqual(50);
         const twitterIpProvider = Object.entries(providers).find(([, provider]) => String(provider.url).includes('/geo/geoip/twitter.mrs'));
         const githubProvider = Object.entries(providers).find(([, provider]) => String(provider.url).includes('/geo/geosite/github.mrs'));
         const privateIpProvider = Object.entries(providers).find(([, provider]) => String(provider.url).includes('/geo/geoip/private.mrs'));

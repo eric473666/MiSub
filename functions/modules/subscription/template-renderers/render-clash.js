@@ -82,52 +82,82 @@ function createRuleProvider(providerUrl, providerName) {
     };
 }
 
-const DEFAULT_DNS_CONFIG = {
-    enable: true,
-    listen: '0.0.0.0:1053',
-    ipv6: false,
-    'enhanced-mode': 'fake-ip',
-    'fake-ip-range': '198.18.0.1/16',
-    'fake-ip-filter': [
-        '*.lan',
-        '*.local',
-        '*.home.arpa',
-        '*.localdomain',
-        'home.arpa',
-        'homeassistant.local',
-        'localhost',
-        'time.*.com',
-        'ntp.*.com',
-        '+.msftconnecttest.com',
-        '+.msftncsi.com',
-        '+.fengkongcloud.com',
-        '+.xiaohongshu-mycdn.com',
-        '+.xiaohongshu.com',
-        '+.xiaohongshu.net',
-        '+.xhscdn.com',
-        '+.xhscdn.net',
-        '+.xhslink.com',
-        '+.dianping.com',
-        '+.dpfile.com',
-        '+.maoyan.com',
-        '+.meituan.com',
-        '+.meituan.net',
-        '+.mtyun.com',
-        '+.sankuai.com'
-    ],
-    'default-nameserver': [
-        '223.5.5.5',
-        '119.29.29.29'
-    ],
-    nameserver: [
-        'https://dns.alidns.com/dns-query',
-        'https://doh.pub/dns-query'
-    ],
-    'proxy-server-nameserver': [
-        'https://dns.alidns.com/dns-query',
-        'https://doh.pub/dns-query'
-    ],
-    'nameserver-policy': {
+const DOMESTIC_DOH_SERVERS = [
+    'https://dns.alidns.com/dns-query',
+    'https://doh.pub/dns-query'
+];
+
+const BASE_FAKE_IP_FILTER = [
+    '*.lan',
+    '*.local',
+    '*.home.arpa',
+    '*.localdomain',
+    'home.arpa',
+    'homeassistant.local',
+    'localhost',
+    'time.*.com',
+    'ntp.*.com',
+    '+.msftconnecttest.com',
+    '+.msftncsi.com',
+    '+.stun.*.*',
+    '+.stun.*.*.*',
+    '+.stun.*.*.*.*',
+    '+.stun.*.*.*.*.*',
+    'lens.l.google.com',
+    '*.n.n.srv.nintendo.net',
+    '+.stun.playstation.net',
+    'xbox.*.*.microsoft.com',
+    '*.*.xboxlive.com',
+    '*.mcdn.bilivideo.cn'
+];
+
+const MIHOMO_REAL_IP_FILTER = [
+    '+.fengkongcloud.com',
+    '+.xiaohongshu-mycdn.com',
+    '+.xiaohongshu.com',
+    '+.xiaohongshu.net',
+    '+.xhscdn.com',
+    '+.xhscdn.net',
+    '+.xhslink.com',
+    '+.dianping.com',
+    '+.dpfile.com',
+    '+.maoyan.com',
+    '+.meituan.com',
+    '+.meituan.net',
+    '+.mtyun.com',
+    '+.sankuai.com'
+];
+
+function isStashUserAgent(userAgent) {
+    return /stash/i.test(String(userAgent || ''));
+}
+
+function createDnsConfig({ stash = false } = {}) {
+    const config = {
+        enable: true,
+        listen: '0.0.0.0:1053',
+        'enhanced-mode': 'fake-ip',
+        'fake-ip-range': '198.18.0.1/16',
+        'fake-ip-filter': stash
+            ? [...BASE_FAKE_IP_FILTER]
+            : [...BASE_FAKE_IP_FILTER, ...MIHOMO_REAL_IP_FILTER],
+        'default-nameserver': [
+            '223.5.5.5',
+            '119.29.29.29'
+        ],
+        nameserver: [...DOMESTIC_DOH_SERVERS]
+    };
+
+    if (stash) {
+        // Stash resolves proxied Fake-IP traffic by domain. Keeping DNS direct avoids
+        // recursive proxy lookups and works across ordinary Wi-Fi/cellular networks.
+        config['follow-rule'] = false;
+        return config;
+    }
+
+    config.ipv6 = false;
+    config['proxy-server-nameserver'] = [...DOMESTIC_DOH_SERVERS];
+    config['nameserver-policy'] = {
         '+.googleapis.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
         '+.googleapis.cn': 'https://1.1.1.1/dns-query#🚀 默认代理',
         '+.googleusercontent.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
@@ -138,8 +168,9 @@ const DEFAULT_DNS_CONFIG = {
         '+.gvt3.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
         '+.xn--ngstr-lra8j.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
         'geosite:geolocation-!cn': 'https://1.1.1.1/dns-query#🚀 默认代理'
-    }
-};
+    };
+    return config;
+}
 
 function appendRuleExtras(ruleText, extras) {
     const cleanedExtras = Array.isArray(extras)
@@ -161,8 +192,9 @@ function mapRule(rule, ruleProviderMap) {
     return appendRuleExtras(`${type},${rule.value},${rule.policy}`, rule.extras);
 }
 
-export function renderClashFromTemplateModel(model) {
+export function renderClashFromTemplateModel(model, options = {}) {
     const normalizedModel = normalizeUnifiedTemplateModel(model);
+    const stash = isStashUserAgent(options.userAgent);
 
     const ruleProviders = {};
     const ruleProviderMap = new Map();
@@ -196,10 +228,12 @@ export function renderClashFromTemplateModel(model) {
         'allow-lan': true,
         'mode': 'rule',
         'log-level': 'info',
-        'ipv6': false,
-        'tcp-concurrent': true,
+        ...(stash ? {} : {
+            'ipv6': false,
+            'tcp-concurrent': true
+        }),
         'external-controller': ':9090',
-        'dns': DEFAULT_DNS_CONFIG,
+        'dns': createDnsConfig({ stash }),
         'proxies': normalizedModel.proxies,
         'proxy-groups': normalizedModel.groups
             .filter(group => Array.isArray(group.members) && group.members.length > 0)
