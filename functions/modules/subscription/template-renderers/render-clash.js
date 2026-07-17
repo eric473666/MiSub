@@ -111,65 +111,23 @@ const BASE_FAKE_IP_FILTER = [
     '*.mcdn.bilivideo.cn'
 ];
 
-const MIHOMO_REAL_IP_FILTER = [
-    '+.fengkongcloud.com',
-    '+.xiaohongshu-mycdn.com',
-    '+.xiaohongshu.com',
-    '+.xiaohongshu.net',
-    '+.xhscdn.com',
-    '+.xhscdn.net',
-    '+.xhslink.com',
-    '+.dianping.com',
-    '+.dpfile.com',
-    '+.maoyan.com',
-    '+.meituan.com',
-    '+.meituan.net',
-    '+.mtyun.com',
-    '+.sankuai.com'
-];
-
 function isStashUserAgent(userAgent) {
     return /stash/i.test(String(userAgent || ''));
 }
 
-function createDnsConfig({ stash = false } = {}) {
-    const config = {
+function createDnsConfig() {
+    return {
         enable: true,
         listen: '0.0.0.0:1053',
         'enhanced-mode': 'fake-ip',
         'fake-ip-range': '198.18.0.1/16',
-        'fake-ip-filter': stash
-            ? [...BASE_FAKE_IP_FILTER]
-            : [...BASE_FAKE_IP_FILTER, ...MIHOMO_REAL_IP_FILTER],
+        'fake-ip-filter': [...BASE_FAKE_IP_FILTER],
         'default-nameserver': [
             '223.5.5.5',
-            '119.29.29.29'
+            '1.1.1.1'
         ],
         nameserver: [...DOMESTIC_DOH_SERVERS]
     };
-
-    if (stash) {
-        // Stash resolves proxied Fake-IP traffic by domain. Keeping DNS direct avoids
-        // recursive proxy lookups and works across ordinary Wi-Fi/cellular networks.
-        config['follow-rule'] = false;
-        return config;
-    }
-
-    config.ipv6 = false;
-    config['proxy-server-nameserver'] = [...DOMESTIC_DOH_SERVERS];
-    config['nameserver-policy'] = {
-        '+.googleapis.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
-        '+.googleapis.cn': 'https://1.1.1.1/dns-query#🚀 默认代理',
-        '+.googleusercontent.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
-        '+.gstatic.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
-        '+.gvt0.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
-        '+.gvt1.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
-        '+.gvt2.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
-        '+.gvt3.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
-        '+.xn--ngstr-lra8j.com': 'https://1.1.1.1/dns-query#🚀 默认代理',
-        'geosite:geolocation-!cn': 'https://1.1.1.1/dns-query#🚀 默认代理'
-    };
-    return config;
 }
 
 function appendRuleExtras(ruleText, extras) {
@@ -233,7 +191,7 @@ export function renderClashFromTemplateModel(model, options = {}) {
             'tcp-concurrent': true
         }),
         'external-controller': ':9090',
-        'dns': createDnsConfig({ stash }),
+        'dns': createDnsConfig(),
         'proxies': normalizedModel.proxies,
         'proxy-groups': normalizedModel.groups
             .filter(group => Array.isArray(group.members) && group.members.length > 0)

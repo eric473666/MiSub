@@ -74,7 +74,7 @@ MATCH,MyGroup
         });
 
         const parsed = yaml.load(result.content);
-        expect(parsed.dns['follow-rule']).toBe(false);
+        expect(parsed.dns['follow-rule']).toBeUndefined();
         expect(parsed.dns['nameserver-policy']).toBeUndefined();
         expect(parsed.dns['proxy-server-nameserver']).toBeUndefined();
         expect(parsed.ipv6).toBeUndefined();

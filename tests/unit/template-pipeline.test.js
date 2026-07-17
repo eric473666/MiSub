@@ -77,8 +77,13 @@ MATCH,节点选择
         expect(parsed.profile['subscription-url']).toBe('https://example.com/sub');
         expect(parsed.ipv6).toBe(false);
         expect(parsed.dns['enhanced-mode']).toBe('fake-ip');
-        expect(parsed.dns['fake-ip-filter']).toContain('+.xiaohongshu.com');
-        expect(parsed.dns['nameserver-policy']['geosite:geolocation-!cn']).toContain('https://1.1.1.1/dns-query#🚀 默认代理');
+        expect(parsed.dns['fake-ip-filter']).toContain('*.lan');
+        expect(parsed.dns['proxy-server-nameserver']).toBeUndefined();
+        expect(parsed.dns['nameserver-policy']).toBeUndefined();
+        expect(parsed.dns.nameserver).toEqual([
+            'https://dns.alidns.com/dns-query',
+            'https://doh.pub/dns-query'
+        ]);
     });
 
     it('should render Stash-safe DNS for ordinary Wi-Fi and cellular networks', () => {
@@ -100,7 +105,7 @@ MATCH,节点选择
         expect(parsed.ipv6).toBeUndefined();
         expect(parsed['tcp-concurrent']).toBeUndefined();
         expect(parsed.dns.ipv6).toBeUndefined();
-        expect(parsed.dns['follow-rule']).toBe(false);
+        expect(parsed.dns['follow-rule']).toBeUndefined();
         expect(parsed.dns.nameserver).toEqual([
             'https://dns.alidns.com/dns-query',
             'https://doh.pub/dns-query'
@@ -165,284 +170,118 @@ ruleset=👋 手动切换,[]FINAL
         expect(rendered).not.toContain('\n  filter:');
     });
 
-    it('should render the active custom Clash template for the current manual nodes', () => {
+    it('should render the stable mainstream custom Clash template', () => {
         const template = fs.readFileSync('public/misub-custom-clash.ini', 'utf8');
         const rendered = renderClashFromIniTemplate(template, {
             proxies: [
-                { name: '🇺🇸 手动节点 - US-USAT3-via-BWH', type: 'trojan', server: '192.0.2.1', port: 443, password: 'pass' },
-                { name: '🇺🇸 手动节点 - US-USAT3-via-HK', type: 'trojan', server: '192.0.2.2', port: 443, password: 'pass' },
-                { name: '🇺🇸 手动节点 - US-USAT3-via-DMIT', type: 'trojan', server: '192.0.2.3', port: 443, password: 'pass' },
-                { name: '🇺🇸 手动节点 - US-USAT3', type: 'trojan', server: '192.0.2.4', port: 443, password: 'pass' },
-                { name: '🇭🇰 手动节点 - HK-HKT3', type: 'trojan', server: '192.0.2.5', port: 443, password: 'pass' },
-                { name: '🇬🇧 手动节点 - UK-GUID2', type: 'trojan', server: '192.0.2.6', port: 443, password: 'pass' },
-                { name: '🇭🇰 手动节点 - HK-HKT3-via-HK', type: 'trojan', server: '192.0.2.7', port: 443, password: 'pass' },
-                { name: '🇬🇧 手动节点 - UK-GUID2-via-HK', type: 'trojan', server: '192.0.2.8', port: 443, password: 'pass' },
-                { name: '🇬🇧 手动节点 - UK-LISA-via-HK', type: 'trojan', server: '192.0.2.9', port: 443, password: 'pass' },
-                { name: '🇯🇵 手动节点 - JP-JPKD2-via-HK', type: 'trojan', server: '192.0.2.10', port: 443, password: 'pass' },
-                { name: '🇯🇵 手动节点 - JP-JPKD2', type: 'trojan', server: '192.0.2.11', port: 443, password: 'pass' },
-                { name: '🇺🇸 手动节点 - US-DMIT', type: 'trojan', server: '192.0.2.12', port: 443, password: 'pass' },
-                { name: '🇬🇧 手动节点 - UK-LISA-via-BWH', type: 'trojan', server: '192.0.2.13', port: 443, password: 'pass' },
-                { name: '🇺🇸 手动节点 - US-BWH', type: 'trojan', server: '192.0.2.14', port: 443, password: 'pass' },
-                { name: '🇬🇧 手动节点 - UK-LISA', type: 'trojan', server: '192.0.2.15', port: 443, password: 'pass' },
-                { name: '🇭🇰 手动节点 - HK-VMISS', type: 'trojan', server: '192.0.2.16', port: 443, password: 'pass' },
-                { name: '🇺🇸 手动节点 - US-ZG-LA', type: 'trojan', server: '192.0.2.17', port: 443, password: 'pass' },
-                { name: '🇭🇰 手动节点 - HK-ZGO', type: 'trojan', server: '192.0.2.18', port: 443, password: 'pass' }
+                { name: '🇺🇸 手动节点 - US-BWH', type: 'trojan', server: '192.0.2.1', port: 443, password: 'pass' },
+                { name: '🇺🇸 手动节点 - US-DMIT', type: 'trojan', server: '192.0.2.2', port: 443, password: 'pass' },
+                { name: '🇭🇰 手动节点 - HK-VMISS', type: 'trojan', server: '192.0.2.3', port: 443, password: 'pass' },
+                { name: '🇭🇰 手动节点 - HKG-LazyCat', type: 'trojan', server: '192.0.2.4', port: 443, password: 'pass' },
+                { name: '🇺🇸 手动节点 - US-USAT3-via-BWH', type: 'trojan', server: '192.0.2.5', port: 443, password: 'pass' },
+                { name: '🇬🇧 手动节点 - UK-LISA-via-BWH', type: 'trojan', server: '192.0.2.6', port: 443, password: 'pass' },
+                { name: '🇯🇵 手动节点 - JP-JPKD2-via-HK', type: 'trojan', server: '192.0.2.7', port: 443, password: 'pass' }
             ]
         });
 
         const parsed = yaml.load(rendered);
         const groups = Object.fromEntries(parsed['proxy-groups'].map(group => [group.name, group]));
+        const providerUrls = Object.values(parsed['rule-providers'] || {}).map(provider => String(provider.url));
 
         expect(parsed['proxy-groups'].every(group => group.filter === undefined)).toBe(true);
-        expect(rendered).not.toContain('\n    filter:');
-        expect(groups['🇺🇸 BWH-LA 日常']).toBeUndefined();
-        expect(groups['🇺🇸 DMIT/LA 日常']).toBeUndefined();
-        expect(groups['🇬🇧 英国出口']).toBeUndefined();
-        expect(groups['🚀 默认代理'].proxies).toEqual([
-            '♻️ 日常自动',
-            '🇺🇸 LA 机房线路',
-            '🇭🇰 香港日常',
-            '👋 手动切换',
-            'DIRECT'
-        ]);
-        expect(groups['🇺🇸 LA 机房线路'].type).toBe('select');
-        expect(groups['🇺🇸 LA 机房线路'].proxies).toEqual([
-            '🇺🇸 手动节点 - US-BWH',
-            '🇺🇸 手动节点 - US-DMIT'
-        ]);
-        expect(groups['♻️ 日常自动'].proxies).toEqual(['🇺🇸 LA 机房线路', '🇭🇰 香港日常']);
-        expect(groups['🇭🇰 香港日常'].proxies).toEqual([
-            '🇭🇰 手动节点 - HK-VMISS',
-            '🇭🇰 手动节点 - HK-ZGO',
-            '🇭🇰 手动节点 - HK-HKT3-via-HK',
-            '🇭🇰 手动节点 - HK-HKT3'
-        ]);
-        expect(groups['🇺🇸 美国落地'].proxies).toEqual([
-            '🇺🇸 手动节点 - US-USAT3',
-            '🇺🇸 手动节点 - US-USAT3-via-BWH',
-            '🇺🇸 手动节点 - US-USAT3-via-HK',
-            '🇺🇸 手动节点 - US-USAT3-via-DMIT'
-        ]);
-        expect(groups['🇭🇰 HKT3 落地'].proxies).toEqual([
-            '🇭🇰 手动节点 - HK-HKT3',
-            '🇭🇰 手动节点 - HK-HKT3-via-HK'
-        ]);
-        expect(groups['🇬🇧 GUID2 落地'].proxies).toEqual([
-            '🇬🇧 手动节点 - UK-GUID2',
-            '🇬🇧 手动节点 - UK-GUID2-via-HK'
-        ]);
-        expect(groups['🇬🇧 LISA 落地'].proxies).toEqual([
-            '🇬🇧 手动节点 - UK-LISA',
-            '🇬🇧 手动节点 - UK-LISA-via-BWH',
-            '🇬🇧 手动节点 - UK-LISA-via-HK'
-        ]);
-        expect(groups['🇬🇧 英国落地'].proxies).toEqual([
-            '🇬🇧 LISA 落地',
-            '🇬🇧 GUID2 落地',
-            '👋 手动切换'
-        ]);
-        expect(groups['🇯🇵 日本落地'].proxies).toEqual([
-            '🇯🇵 手动节点 - JP-JPKD2-via-HK',
-            '🇯🇵 手动节点 - JP-JPKD2'
-        ]);
-        expect(groups['🇹🇼 台湾落地']).toBeUndefined();
-        expect(groups['🌐 社交媒体'].proxies).toEqual([
-            '🇺🇸 LA 机房线路',
-            '♻️ 日常自动',
-            '🇭🇰 香港日常',
-            '👋 手动切换',
-            'DIRECT'
-        ]);
-        expect(groups['🛠 开发云服务'].proxies).toEqual([
-            '🇺🇸 LA 机房线路',
-            '♻️ 日常自动',
-            '🇭🇰 香港日常',
-            '👋 手动切换',
-            'DIRECT'
-        ]);
-        expect(groups['📚 学术新闻'].proxies).toEqual([
-            '🇺🇸 LA 机房线路',
-            '♻️ 日常自动',
-            '🇭🇰 香港日常',
-            '👋 手动切换',
-            'DIRECT'
-        ]);
-        expect(groups['📱 Google Play'].type).toBe('fallback');
-        expect(groups['📱 Google Play'].proxies).toEqual([
-            '🇭🇰 香港日常',
-            '🇺🇸 LA 机房线路',
-            '♻️ 日常自动',
-            '👋 手动切换'
-        ]);
-        expect(groups['📦 PikPak'].proxies).toEqual([
-            '🇺🇸 LA 机房线路',
-            '🇭🇰 香港日常',
-            '♻️ 日常自动',
-            '👋 手动切换',
-            'DIRECT'
-        ]);
-        expect(groups['🏠 家宽池'].proxies).toEqual([
-            '🇺🇸 美国落地',
-            '🇬🇧 英国落地',
-            '🇯🇵 日本落地',
-            '🇭🇰 HKT3 落地',
-            '👋 手动切换'
-        ]);
-        expect(groups['🎨 Adobe'].proxies).toEqual([
-            '🇯🇵 日本落地',
-            '🇬🇧 英国落地',
-            '🇺🇸 美国落地',
-            '🇺🇸 LA 机房线路',
-            'DIRECT',
-            '👋 手动切换'
-        ]);
-        expect(groups['💻 Codex']).toBeUndefined();
-        expect(groups['🤖 智能 AI'].proxies.slice(0, 4)).toEqual([
-            '🇺🇸 美国落地',
-            '🇺🇸 LA 机房线路',
-            '🇯🇵 日本落地',
-            '🇬🇧 英国落地'
-        ]);
-        expect(groups['🏰 Disney'].proxies[0]).toBe('🇺🇸 美国落地');
-        expect(groups['🤖 智能 AI'].proxies).toContain('🇺🇸 LA 机房线路');
-        expect(groups['🤖 智能 AI'].proxies).not.toContain('♻️ 日常自动');
-        expect(groups['🎙 AI 语音解说'].proxies).not.toContain('♻️ 日常自动');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,chatgpt.com,🤖 智能 AI');
-        expect(parsed.rules).not.toContain('DOMAIN,codex.openai.com,💻 Codex');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,elevenlabs.io,🎙 AI 语音解说');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,cartesia.ai,🎙 AI 语音解说');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,sora.com,🎬 AI 视频生成');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,veo.google.com,🎬 AI 视频生成');
-        expect(parsed.rules).toContain('DOMAIN,gemini.google.com,🤖 智能 AI');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,openrouter.ai,🤖 智能 AI');
+        expect(groups['🚀 默认代理']).toBeUndefined();
+        expect(groups['🚀 节点选择']).toMatchObject({
+            type: 'select',
+            proxies: [
+                '♻️ 自动选择',
+                '🔯 故障转移',
+                '🇺🇸 LA 机房线路',
+                '🇭🇰 香港日常',
+                '👋 手动切换',
+                'DIRECT'
+            ]
+        });
+        expect(groups['♻️ 自动选择']).toMatchObject({
+            type: 'url-test',
+            proxies: [
+                '🇺🇸 手动节点 - US-BWH',
+                '🇺🇸 手动节点 - US-DMIT',
+                '🇭🇰 手动节点 - HK-VMISS',
+                '🇭🇰 手动节点 - HKG-LazyCat'
+            ]
+        });
+        expect(groups['🔯 故障转移'].type).toBe('fallback');
+        expect(groups['🔯 故障转移'].proxies).toEqual(groups['♻️ 自动选择'].proxies);
+        expect(groups['🇺🇸 AI 稳定线路']).toMatchObject({
+            type: 'fallback',
+            proxies: [
+                '🇺🇸 手动节点 - US-BWH',
+                '🇺🇸 手动节点 - US-DMIT',
+                '🇺🇸 手动节点 - US-USAT3-via-BWH'
+            ]
+        });
+
+        for (const groupName of [
+            '🎨 Adobe',
+            '📱 Google Play',
+            '📦 PikPak',
+            '📺 YouTube',
+            '🎞 Netflix',
+            '🎥 流媒体',
+            '🌐 社交媒体',
+            '📲 Telegram',
+            '🛠 开发云服务',
+            '📚 学术新闻'
+        ]) {
+            expect(groups[groupName].proxies[0]).toBe('🚀 节点选择');
+        }
+        expect(groups['🎨 Adobe'].proxies).not.toContain('🇯🇵 日本落地');
+        expect(groups['🎙 AI 语音'].proxies[0]).toBe('🤖 智能 AI');
+        expect(groups['🎬 AI 视频'].proxies[0]).toBe('🤖 智能 AI');
+        expect(groups['🤖 智能 AI'].proxies[0]).toBe('🇺🇸 AI 稳定线路');
+        expect(groups['🇬🇧 英国媒体'].proxies[0]).toBe('🇬🇧 英国落地');
+        expect(groups['🍎 Apple'].proxies[0]).toBe('DIRECT');
+        expect(groups['Ⓜ️ Microsoft'].proxies[0]).toBe('DIRECT');
+        expect(groups['🐟 漏网之鱼'].proxies[0]).toBe('🚀 节点选择');
+
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,adobe.com,🎨 Adobe');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,adobelogin.com,🎨 Adobe');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,apple-cloudkit.com,🍎 Apple');
-        expect(parsed.rules).toContain('DOMAIN,time.apple.com,🍎 Apple');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,bbc.co.uk,🇬🇧 英国媒体');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,now.com,🇬🇧 英国媒体');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,x.com,🌐 社交媒体');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,instagram.com,🌐 社交媒体');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,cdninstagram.com,🌐 社交媒体');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,video.twimg.com,🌐 社交媒体');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,whatsapp.com,🌐 社交媒体');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,discord.com,🌐 社交媒体');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,reddit.com,🌐 社交媒体');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,linkedin.com,🌐 社交媒体');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,github.com,🛠 开发云服务');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,docker.io,🛠 开发云服务');
-        expect(parsed.rules).toContain('DOMAIN,registry.npmjs.org,🛠 开发云服务');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,twitch.tv,🎥 流媒体');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,dazn.com,🎥 流媒体');
-        expect(parsed.rules).toContain('DOMAIN,tv.apple.com,🎥 流媒体');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,biliintl.com,🎥 流媒体');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,nicovideo.jp,🇯🇵 日本落地');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,nimg.jp,🇯🇵 日本落地');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,coursera.org,📚 学术新闻');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,wikipedia.org,📚 学术新闻');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,nytimes.com,📚 学术新闻');
-        expect(parsed.rules).toContain('DOMAIN,homeassistant.local,DIRECT');
-        expect(parsed.rules).toContain('IP-CIDR,192.168.5.0/24,DIRECT,no-resolve');
-        expect(parsed.rules).toContain('IP-CIDR,192.168.20.0/24,DIRECT,no-resolve');
-        expect(parsed.rules).toContain('DOMAIN,android.clients.google.com,📱 Google Play');
-        expect(parsed.rules).toContain('DOMAIN,play.googleapis.com,📱 Google Play');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,gvt1.com,📱 Google Play');
+        expect(parsed.rules).not.toContain('DOMAIN-SUFFIX,typekit.net,🎨 Adobe');
+        expect(parsed.rules.some(rule => rule.includes('typekit.net'))).toBe(false);
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,sora.com,🎬 AI 视频');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,elevenlabs.io,🎙 AI 语音');
         expect(parsed.rules).toContain('DOMAIN-SUFFIX,mypikpak.com,📦 PikPak');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,mypikpak.net,📦 PikPak');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,pikpak.com,📦 PikPak');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,pikpakdrive.com,📦 PikPak');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,pikpak.me,📦 PikPak');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,pikpak.io,📦 PikPak');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,pickpackapp.com,📦 PikPak');
-        expect(parsed.rules).toContain('DOMAIN-KEYWORD,mypikpak,📦 PikPak');
-        expect(parsed.rules).toContain('DOMAIN-KEYWORD,pikpak,📦 PikPak');
-        expect(parsed.rules.indexOf('DOMAIN-SUFFIX,googleapis.cn,📱 Google Play')).toBeLessThan(
-            parsed.rules.indexOf('DOMAIN-SUFFIX,cn,DIRECT')
-        );
-        expect(parsed.rules.indexOf('DOMAIN-KEYWORD,pikpak,📦 PikPak')).toBeLessThan(
-            parsed.rules.indexOf('DOMAIN-SUFFIX,cn,DIRECT')
-        );
-        expect(parsed.rules.indexOf('DOMAIN-SUFFIX,adobe.com,🎨 Adobe')).toBeLessThan(
-            parsed.rules.indexOf('DOMAIN-SUFFIX,cn,DIRECT')
-        );
-        const globalMediaRuleIndex = parsed.rules.findIndex(rule => rule.startsWith('RULE-SET,globalmedia'));
-        expect(parsed.rules.indexOf('DOMAIN-SUFFIX,nicovideo.jp,🇯🇵 日本落地')).toBeLessThan(globalMediaRuleIndex);
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,bbc.co.uk,🇬🇧 英国媒体');
+        expect(parsed.rules).toContain('DOMAIN-SUFFIX,nicovideo.jp,🇯🇵 日本落地');
+        expect(parsed.rules).not.toContain('DOMAIN-SUFFIX,booking.com,DIRECT');
+        expect(parsed.rules).not.toContain('DOMAIN-SUFFIX,gov.uk,DIRECT');
+        expect(parsed.rules).not.toContain('DOMAIN-SUFFIX,amazon.co.uk,DIRECT');
+        expect(parsed.rules).toContain('GEOIP,CN,DIRECT');
+        expect(parsed.rules).toContain('MATCH,🐟 漏网之鱼');
+        expect(parsed.rules.length).toBeLessThan(170);
+
+        expect(providerUrls.some(url => url.includes('/Clash/Providers/ProxyLite.yaml'))).toBe(true);
+        expect(providerUrls.some(url => url.includes('/Clash/Providers/BanAD.yaml'))).toBe(true);
+        expect(providerUrls.some(url => url.includes('/Clash/Providers/Ruleset/Telegram.yaml'))).toBe(true);
+        expect(providerUrls.some(url => url.includes('/Clash/Providers/Ruleset/Microsoft.yaml'))).toBe(true);
+        expect(providerUrls.some(url => url.includes('/Clash/Providers/Ruleset/GoogleCN.yaml'))).toBe(true);
+        expect(providerUrls.some(url => url.includes('/geo/geosite/category-scholar-!cn.mrs'))).toBe(true);
+        expect(providerUrls.every(url => !url.includes('/Privacy/'))).toBe(true);
+        expect(providerUrls.every(url => !url.includes('/Hijacking/'))).toBe(true);
+        expect(providerUrls.length).toBeLessThan(40);
+
         expect(parsed.ipv6).toBe(false);
         expect(parsed['tcp-concurrent']).toBe(true);
-        expect(parsed.dns['fake-ip-filter']).toContain('homeassistant.local');
-        expect(parsed.dns['fake-ip-filter']).toContain('*.home.arpa');
-        const xiaohongshuDomains = [
-            '+.fengkongcloud.com',
-            '+.xiaohongshu-mycdn.com',
-            '+.xiaohongshu.com',
-            '+.xiaohongshu.net',
-            '+.xhscdn.com',
-            '+.xhscdn.net',
-            '+.xhslink.com'
-        ];
-        for (const domain of xiaohongshuDomains) {
-            expect(parsed.dns['fake-ip-filter']).toContain(domain);
-            expect(parsed.dns['nameserver-policy'][domain]).toBeUndefined();
-        }
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,fengkongcloud.com,DIRECT');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,xiaohongshu-mycdn.com,DIRECT');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,xiaohongshu.net,DIRECT');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,xhscdn.net,DIRECT');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,meituan-ad.com,DIRECT');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,rmtyun.com,DIRECT');
-        expect(parsed.rules).toContain('DOMAIN-SUFFIX,zhufangdianping.com,DIRECT');
-        const meituanDomains = [
-            '+.dianping.com',
-            '+.dpfile.com',
-            '+.maoyan.com',
-            '+.meituan.com',
-            '+.meituan.net',
-            '+.mtyun.com',
-            '+.sankuai.com'
-        ];
-        for (const domain of meituanDomains) {
-            expect(parsed.dns['fake-ip-filter']).toContain(domain);
-            expect(parsed.dns['nameserver-policy'][domain]).toBeUndefined();
-        }
+        expect(parsed.dns['enhanced-mode']).toBe('fake-ip');
+        expect(parsed.dns['default-nameserver']).toEqual(['223.5.5.5', '1.1.1.1']);
         expect(parsed.dns.nameserver).toEqual([
             'https://dns.alidns.com/dns-query',
             'https://doh.pub/dns-query'
         ]);
-        expect(parsed.dns['nameserver-policy']['geosite:cn']).toBeUndefined();
-        expect(parsed.dns['nameserver-policy']['+.googleapis.cn']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');
-        expect(parsed.dns['nameserver-policy']['+.gvt1.com']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');
-        expect(parsed.dns['nameserver-policy']['geosite:geolocation-!cn']).toBe('https://1.1.1.1/dns-query#🚀 默认代理');
-        const providers = parsed['rule-providers'] || {};
-        const providerUrls = Object.values(providers).map(provider => provider.url);
-        expect(providerUrls.some(url => String(url).includes('/rule/Clash/Google/Google.yaml'))).toBe(true);
-        expect(providerUrls.some(url => String(url).includes('/geo/geosite/pikpak.mrs'))).toBe(true);
-        expect(providerUrls.some(url => String(url).includes('/geo/geosite/cn.mrs'))).toBe(true);
-        expect(providerUrls.some(url => String(url).includes('/geo/geoip/cn.mrs'))).toBe(true);
-        expect(providerUrls.some(url => String(url).includes('/rule/Clash/PikPak/PikPak.yaml'))).toBe(true);
-        expect(providerUrls.every(url => !String(url).includes('/rule/Clash/ChinaMax/ChinaMax.yaml'))).toBe(true);
-        expect(providerUrls.every(url => !String(url).includes('/rule/Clash/WeChat/WeChat.yaml'))).toBe(true);
-        expect(providerUrls.every(url => !String(url).includes('/rule/Clash/Providers/'))).toBe(true);
-        expect(Object.values(providers).filter(provider => provider.behavior === 'classical').length).toBeLessThanOrEqual(50);
-        const twitterIpProvider = Object.entries(providers).find(([, provider]) => String(provider.url).includes('/geo/geoip/twitter.mrs'));
-        const githubProvider = Object.entries(providers).find(([, provider]) => String(provider.url).includes('/geo/geosite/github.mrs'));
-        const privateIpProvider = Object.entries(providers).find(([, provider]) => String(provider.url).includes('/geo/geoip/private.mrs'));
-        expect(twitterIpProvider?.[1]).toMatchObject({
-            behavior: 'ipcidr',
-            format: 'mrs'
-        });
-        expect(twitterIpProvider?.[1].path).toMatch(/\.mrs$/);
-        expect(githubProvider?.[1]).toMatchObject({
-            behavior: 'domain',
-            format: 'mrs'
-        });
-        expect(privateIpProvider?.[1]).toMatchObject({
-            behavior: 'ipcidr',
-            format: 'mrs'
-        });
-        expect(parsed.rules).toContain(`RULE-SET,${twitterIpProvider?.[0]},🌐 社交媒体,no-resolve`);
-        expect(parsed.rules).toContain(`RULE-SET,${privateIpProvider?.[0]},DIRECT,no-resolve`);
+        expect(parsed.dns['proxy-server-nameserver']).toBeUndefined();
+        expect(parsed.dns['nameserver-policy']).toBeUndefined();
+        expect(parsed.dns['fake-ip-filter']).not.toContain('+.xiaohongshu.com');
+        expect(parsed.dns['fake-ip-filter']).not.toContain('+.meituan.com');
     });
-
     it('should keep Clash template relay-like groups as plain select without dialer-proxy', () => {
         const rendered = renderClashFromIniTemplate(`
 [Proxy Group]
