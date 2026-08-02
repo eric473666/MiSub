@@ -178,6 +178,7 @@ ruleset=👋 手动切换,[]FINAL
                 { name: '🇺🇸 手动节点 - US-DMIT', type: 'trojan', server: '192.0.2.2', port: 443, password: 'pass' },
                 { name: '🇭🇰 手动节点 - HK-VMISS', type: 'trojan', server: '192.0.2.3', port: 443, password: 'pass' },
                 { name: '🇭🇰 手动节点 - HKG-LazyCat', type: 'trojan', server: '192.0.2.4', port: 443, password: 'pass' },
+                { name: '🇭🇰 手动节点 - vmiss-HK', type: 'trojan', server: '192.0.2.8', port: 443, password: 'pass' },
                 { name: '🇺🇸 手动节点 - US-USAT3-via-BWH', type: 'trojan', server: '192.0.2.5', port: 443, password: 'pass' },
                 { name: '🇬🇧 手动节点 - UK-LISA-via-BWH', type: 'trojan', server: '192.0.2.6', port: 443, password: 'pass' },
                 { name: '🇯🇵 手动节点 - JP-JPKD2-via-HK', type: 'trojan', server: '192.0.2.7', port: 443, password: 'pass' }
@@ -218,6 +219,16 @@ ruleset=👋 手动切换,[]FINAL
                 '🇺🇸 手动节点 - US-BWH',
                 '🇺🇸 手动节点 - US-DMIT',
                 '🇺🇸 手动节点 - US-USAT3-via-BWH'
+            ]
+        });
+        expect(groups['🇭🇰 香港日常']).toMatchObject({
+            type: 'url-test',
+            interval: 300,
+            tolerance: 20,
+            proxies: [
+                '🇭🇰 手动节点 - HK-VMISS',
+                '🇭🇰 手动节点 - HKG-LazyCat',
+                '🇭🇰 手动节点 - vmiss-HK'
             ]
         });
 
