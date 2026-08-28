@@ -178,6 +178,7 @@ ruleset=👋 手动切换,[]FINAL
             proxies: [
                 { name: '🇺🇸 手动节点 - US-BWH', type: 'trojan', server: '192.0.2.1', port: 443, password: 'pass' },
                 { name: '🇺🇸 手动节点 - US-DMIT', type: 'trojan', server: '192.0.2.2', port: 443, password: 'pass' },
+                { name: '🇺🇸 手动节点 - US-ZG-LA', type: 'trojan', server: '192.0.2.12', port: 443, password: 'pass' },
                 { name: '🇭🇰 手动节点 - HK-VMISS', type: 'trojan', server: '192.0.2.3', port: 443, password: 'pass' },
                 { name: '🇭🇰 手动节点 - HKG-LazyCat', type: 'trojan', server: '192.0.2.4', port: 443, password: 'pass' },
                 { name: '🇭🇰 手动节点 - vmiss-HK', type: 'trojan', server: '192.0.2.8', port: 443, password: 'pass' },
@@ -212,6 +213,7 @@ ruleset=👋 手动切换,[]FINAL
             proxies: [
                 '🇺🇸 手动节点 - US-BWH',
                 '🇺🇸 手动节点 - US-DMIT',
+                '🇺🇸 手动节点 - US-ZG-LA',
                 '🇭🇰 手动节点 - HK-VMISS',
                 '🇭🇰 手动节点 - HKG-LazyCat',
                 '🇸🇬 手动节点 - Neburst-SG'
@@ -219,6 +221,16 @@ ruleset=👋 手动切换,[]FINAL
         });
         expect(groups['🔯 故障转移'].type).toBe('fallback');
         expect(groups['🔯 故障转移'].proxies).toEqual(groups['♻️ 自动选择'].proxies);
+        expect(groups['♻️ 自动选择']).toMatchObject({
+            url: 'https://www.gstatic.com/generate_204',
+            interval: 300,
+            tolerance: 20
+        });
+        expect(groups['🇺🇸 LA 机房线路'].proxies).toEqual([
+            '🇺🇸 手动节点 - US-BWH',
+            '🇺🇸 手动节点 - US-DMIT',
+            '🇺🇸 手动节点 - US-ZG-LA'
+        ]);
         expect(groups['🇺🇸 美国落地']).toMatchObject({
             type: 'fallback',
             proxies: [
