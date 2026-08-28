@@ -172,6 +172,8 @@ ruleset=👋 手动切换,[]FINAL
 
     it('should render the stable mainstream custom Clash template', () => {
         const template = fs.readFileSync('public/misub-custom-clash.ini', 'utf8');
+        const versionedTemplate = fs.readFileSync('public/misub-custom-clash-22.ini', 'utf8');
+        expect(versionedTemplate).toBe(template);
         const rendered = renderClashFromIniTemplate(template, {
             proxies: [
                 { name: '🇺🇸 手动节点 - US-BWH', type: 'trojan', server: '192.0.2.1', port: 443, password: 'pass' },
