@@ -174,10 +174,13 @@ ruleset=👋 手动切换,[]FINAL
         const template = fs.readFileSync('public/misub-custom-clash.ini', 'utf8');
         const versionedTemplate = fs.readFileSync('public/misub-custom-clash-22.ini', 'utf8');
         expect(versionedTemplate).toBe(template);
+        const freshVersionedTemplate = fs.readFileSync('public/misub-custom-clash-23.ini', 'utf8');
+        expect(freshVersionedTemplate).toBe(template);
         const rendered = renderClashFromIniTemplate(template, {
             proxies: [
                 { name: '🇺🇸 手动节点 - US-BWH', type: 'trojan', server: '192.0.2.1', port: 443, password: 'pass' },
                 { name: '🇺🇸 手动节点 - US-DMIT', type: 'trojan', server: '192.0.2.2', port: 443, password: 'pass' },
+                { name: '🇱🇦 手动节点 - LA-DMIT', type: 'trojan', server: '192.0.2.13', port: 443, password: 'pass' },
                 { name: '🇺🇸 手动节点 - US-ZG-LA', type: 'trojan', server: '192.0.2.12', port: 443, password: 'pass' },
                 { name: '🇭🇰 手动节点 - HK-VMISS', type: 'trojan', server: '192.0.2.3', port: 443, password: 'pass' },
                 { name: '🇭🇰 手动节点 - HKG-LazyCat', type: 'trojan', server: '192.0.2.4', port: 443, password: 'pass' },
@@ -213,6 +216,7 @@ ruleset=👋 手动切换,[]FINAL
             proxies: [
                 '🇺🇸 手动节点 - US-BWH',
                 '🇺🇸 手动节点 - US-DMIT',
+                '🇱🇦 手动节点 - LA-DMIT',
                 '🇺🇸 手动节点 - US-ZG-LA',
                 '🇭🇰 手动节点 - HK-VMISS',
                 '🇭🇰 手动节点 - HKG-LazyCat',
@@ -229,6 +233,7 @@ ruleset=👋 手动切换,[]FINAL
         expect(groups['🇺🇸 LA 机房线路'].proxies).toEqual([
             '🇺🇸 手动节点 - US-BWH',
             '🇺🇸 手动节点 - US-DMIT',
+            '🇱🇦 手动节点 - LA-DMIT',
             '🇺🇸 手动节点 - US-ZG-LA'
         ]);
         expect(groups['🇺🇸 美国落地']).toMatchObject({
@@ -236,6 +241,7 @@ ruleset=👋 手动切换,[]FINAL
             proxies: [
                 '🇺🇸 手动节点 - US-BWH',
                 '🇺🇸 手动节点 - US-DMIT',
+                '🇱🇦 手动节点 - LA-DMIT',
                 '🇺🇸 手动节点 - US-USAT3-via-BWH',
                 '🇺🇸 手动节点 - USCOX1-via-DMIT'
             ]
