@@ -180,6 +180,9 @@ ruleset=👋 手动切换,[]FINAL
                 { name: '🇭🇰 手动节点 - HKG-LazyCat', type: 'trojan', server: '192.0.2.4', port: 443, password: 'pass' },
                 { name: '🇭🇰 手动节点 - vmiss-HK', type: 'trojan', server: '192.0.2.8', port: 443, password: 'pass' },
                 { name: '🇺🇸 手动节点 - US-USAT3-via-BWH', type: 'trojan', server: '192.0.2.5', port: 443, password: 'pass' },
+                { name: '🇸🇬 手动节点 - SG-奶爸-新加坡', type: 'trojan', server: '192.0.2.9', port: 443, password: 'pass' },
+                { name: '🇺🇸 手动节点 - USCOX1-via-DMIT', type: 'trojan', server: '192.0.2.10', port: 443, password: 'pass' },
+                { name: '🇺🇸 手动节点 - USCOX1', type: 'trojan', server: '192.0.2.11', port: 443, password: 'pass' },
                 { name: '🇬🇧 手动节点 - UK-LISA-via-BWH', type: 'trojan', server: '192.0.2.6', port: 443, password: 'pass' },
                 { name: '🇯🇵 手动节点 - JP-JPKD2-via-HK', type: 'trojan', server: '192.0.2.7', port: 443, password: 'pass' }
             ]
@@ -208,19 +211,22 @@ ruleset=👋 手动切换,[]FINAL
                 '🇺🇸 手动节点 - US-BWH',
                 '🇺🇸 手动节点 - US-DMIT',
                 '🇭🇰 手动节点 - HK-VMISS',
-                '🇭🇰 手动节点 - HKG-LazyCat'
+                '🇭🇰 手动节点 - HKG-LazyCat',
+                '🇸🇬 手动节点 - SG-奶爸-新加坡'
             ]
         });
         expect(groups['🔯 故障转移'].type).toBe('fallback');
         expect(groups['🔯 故障转移'].proxies).toEqual(groups['♻️ 自动选择'].proxies);
-        expect(groups['🇺🇸 AI 稳定线路']).toMatchObject({
+        expect(groups['🇺🇸 美国落地']).toMatchObject({
             type: 'fallback',
             proxies: [
                 '🇺🇸 手动节点 - US-BWH',
                 '🇺🇸 手动节点 - US-DMIT',
-                '🇺🇸 手动节点 - US-USAT3-via-BWH'
+                '🇺🇸 手动节点 - US-USAT3-via-BWH',
+                '🇺🇸 手动节点 - USCOX1-via-DMIT'
             ]
         });
+        expect(groups['🇺🇸 美国落地'].proxies).not.toContain('🇺🇸 手动节点 - USCOX1');
         expect(groups['🇭🇰 香港日常']).toMatchObject({
             type: 'url-test',
             interval: 300,
@@ -249,7 +255,7 @@ ruleset=👋 手动切换,[]FINAL
         expect(groups['🎨 Adobe'].proxies).not.toContain('🇯🇵 日本落地');
         expect(groups['🎙 AI 语音'].proxies[0]).toBe('🤖 智能 AI');
         expect(groups['🎬 AI 视频'].proxies[0]).toBe('🤖 智能 AI');
-        expect(groups['🤖 智能 AI'].proxies[0]).toBe('🇺🇸 AI 稳定线路');
+        expect(groups['🤖 智能 AI'].proxies[0]).toBe('🇺🇸 美国落地');
         expect(groups['🇬🇧 英国媒体'].proxies[0]).toBe('🇬🇧 英国落地');
         expect(groups['🍎 Apple'].proxies[0]).toBe('DIRECT');
         expect(groups['Ⓜ️ Microsoft'].proxies[0]).toBe('DIRECT');
