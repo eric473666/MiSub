@@ -182,7 +182,7 @@ ruleset=👋 手动切换,[]FINAL
                 { name: '🇭🇰 手动节点 - HKG-LazyCat', type: 'trojan', server: '192.0.2.4', port: 443, password: 'pass' },
                 { name: '🇭🇰 手动节点 - vmiss-HK', type: 'trojan', server: '192.0.2.8', port: 443, password: 'pass' },
                 { name: '🇺🇸 手动节点 - US-USAT3-via-BWH', type: 'trojan', server: '192.0.2.5', port: 443, password: 'pass' },
-                { name: '🇸🇬 手动节点 - SG-奶爸-新加坡', type: 'trojan', server: '192.0.2.9', port: 443, password: 'pass' },
+                { name: '🇸🇬 手动节点 - Neburst-SG', type: 'trojan', server: '192.0.2.9', port: 443, password: 'pass' },
                 { name: '🇺🇸 手动节点 - USCOX1-via-DMIT', type: 'trojan', server: '192.0.2.10', port: 443, password: 'pass' },
                 { name: '🇺🇸 手动节点 - USCOX1', type: 'trojan', server: '192.0.2.11', port: 443, password: 'pass' },
                 { name: '🇬🇧 手动节点 - UK-LISA-via-BWH', type: 'trojan', server: '192.0.2.6', port: 443, password: 'pass' },
@@ -214,7 +214,7 @@ ruleset=👋 手动切换,[]FINAL
                 '🇺🇸 手动节点 - US-DMIT',
                 '🇭🇰 手动节点 - HK-VMISS',
                 '🇭🇰 手动节点 - HKG-LazyCat',
-                '🇸🇬 手动节点 - SG-奶爸-新加坡'
+                '🇸🇬 手动节点 - Neburst-SG'
             ]
         });
         expect(groups['🔯 故障转移'].type).toBe('fallback');
